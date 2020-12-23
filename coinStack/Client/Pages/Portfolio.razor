@@ -1,0 +1,75 @@
+﻿@page "/portfolio"
+@using System.Net.Http
+@inject HttpClient Http
+
+<div class="container is-max-desktop">
+    <PortfolioTitle />
+    <PortfolioSummary />
+    <div class="box mt-4 mb-2 py-0 is-transparent"
+         style="border-color: #4b4b4b; border-radius: 5px; border-style: solid; border-width: 1px;">
+        <div class="columns is-gapless is-mobile">
+            <div class="column">
+                <strong>Coin</strong>
+            </div>
+            <div class="column has-text-centered">
+                <strong>Price&emsp;</strong>
+            </div>
+            <div class="column has-text-right">
+                <strong>Holdings&nbsp;</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    public WatchlistEntry watchlist;
+
+    @*[CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await GetLiveData();
+        }
+
+        private async Task<WatchlistEntry> GetWatchlist(authState)
+        {
+            watchlist = await Http.GetFromJsonAsync<WatchlistEntry>("/api/")
+        }
+
+        private async Task<AuthenticationState> GetLiveData()
+        {
+            var authState = await authenticationStateTask;
+            if (authState.User.Identity != null)
+            {
+                if (authState.User.Identity.IsAuthenticated)
+                {
+                    Console.WriteLine($"User {authState.User.Identity.Name} is authed");
+                    return authState;
+                }
+                else
+                {
+                    Console.WriteLine("user not authed");
+                    return authState;
+                }
+            }
+            else
+            {
+                Console.WriteLine("user not authed");
+                return authState;
+            }
+        }*@
+
+    public class WatchlistEntry
+    {
+        public WatchlistEntry(string[] coinIds, string userId, string postId)
+        {
+            this.values = coinIds;
+            this.userId = userId;
+            this.id = postId;
+        }
+        public string[] values { get; set; }
+        public string userId { get; set; }
+        public string id { get; set; }
+    }
+
+}

@@ -1,0 +1,82 @@
+﻿@page "/trends"
+@using System.Net.Http
+@inject HttpClient Http
+
+<div class="container is-max-desktop">
+    <TrendsTitle />
+    <div class="box mb-5 py-3" style="background: linear-gradient(to top right, #323232, #4b4b4b)">
+        <div class="columns is-gapless is-mobile">
+            <div class="column has-text-centered">
+                <p>(news section placeholder)</p>
+                CoinGecko Top-7 Searched in last 24 hrs:
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container is-max-desktop">
+    <div class="box mt-4 mb-2 py-0 is-transparent"
+         style="border-color: #4b4b4b; border-radius: 5px; border-style: solid; border-width: 1px">
+        <div class="columns is-gapless is-mobile">
+            <div class="column">
+                <strong>&nbsp;Logo</strong>
+            </div>
+            <div class="column has-text-centered">
+                <strong>Name&emsp;</strong>
+            </div>
+            <div class="column has-text-right">
+                <strong>Ticker</strong>
+            </div>
+        </div>
+    </div>
+    @try
+    {
+        @foreach (Coin c in @response.coins)
+        {
+            <div class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;">
+                <div class="columns is-gapless is-mobile is-vcentered pr-4">
+                    <div class="column">
+                        <img alt="@c.item.id logo" src="@c.item.large" style="height: 46px; width: 46px; vertical-align: middle" />
+                        &emsp;# @(c.item.score + 1)
+                    </div>
+                    <div class="column has-text-centered">@c.item.name</div>
+                    <div class="column has-text-right">@c.item.symbol</div>
+                </div>
+            </div>
+        }
+    }
+    catch
+    {
+        <p>Loading...</p>
+    }
+</div>
+
+@code {
+    private string COINGECKO_TRENDS = "https://api.coingecko.com/api/v3/search/trending";
+    public TrendResponse response;
+    public class Item
+    {
+        public string id { get; set; }
+        public string name { get; set; }
+        public string symbol { get; set; }
+        public int market_cap_rank { get; set; }
+        public string thumb { get; set; }
+        public string large { get; set; }
+        public int score { get; set; }
+    }
+
+    public class Coin
+    {
+        public Item item { get; set; }
+    }
+
+    public class TrendResponse
+    {
+        public List<Coin> coins { get; set; }
+        public List<object> exchanges { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        response = await Http.GetFromJsonAsync<TrendResponse>(COINGECKO_TRENDS);
+    }
+}
