@@ -1,0 +1,39 @@
+﻿@page "/register"
+@inject NavigationManager NavigationManager
+
+<h3>Register</h3>
+
+<EditForm Model="@user" OnValidSubmit="HandleRegistration" autocomplete="off">
+    <DataAnnotationsValidator />
+    <div class="field">
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="user.Email" class="input is-primary" />
+        <ValidationMessage For="@(() => user.Email)" />
+    </div>
+    <div class="field">
+        <label for="username">Username</label>
+        <InputText id="username" @bind-Value="user.Username" class="input is-primary" />
+        <ValidationMessage For="@(() => user.Email)" />
+    </div>
+    <div class="field">
+        <label for="password">Password</label>
+        <InputText id="password" @bind-Value="user.Password" type="password" class="input is-primary" />
+        <ValidationMessage For="@(() => user.Password)" />
+    </div>
+    <div class="field">
+        <label for="confirmPassword">Confirm Password</label>
+        <InputText id="confirmPassword" @bind-Value="user.ConfirmPassword" type="password" class="input is-primary" />
+        <ValidationMessage For="@(() => user.ConfirmPassword)" />
+    </div>
+    <button type="submit" class="button is-primary is-outlined">Register</button>
+</EditForm>
+
+@code {
+    UserRegister user = new UserRegister();
+
+    void HandleRegistration()
+    {
+        NavigationManager.NavigateTo("login");
+    }
+
+}

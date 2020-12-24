@@ -10,6 +10,9 @@
   font-weight: 400;
   src: url(../font/Sahitya/Sahitya-Regular.ttf) format("truetype"); }
 
+.input:-internal-autofill-selected {
+  background-color: transparent !important; }
+
 .dropdown {
   width: 90%; }
 

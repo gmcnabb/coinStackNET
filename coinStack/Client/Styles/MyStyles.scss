@@ -56,6 +56,10 @@ $dropdown-content-shadow: 0px;
     src: url(../wwwroot/font/Sahitya/Sahitya-Regular.ttf) format("truetype");
 }
 
+.input:-internal-autofill-selected {
+    background-color: transparent !important;
+}
+
 .dropdown {
     width: 90%;
 }
