@@ -1,4 +1,8 @@
-﻿<div class="container is-max-desktop">
+﻿@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+<div class="container is-max-desktop">
     <nav class="navbar" role="navigation" aria-label="main navigation" style="background: transparent">
         <div class="container">
             <div class="navbar-brand">
@@ -33,6 +37,19 @@
                 <div class="navbar-end">
                     <div class="navbar-item">
                         <div class="buttons is-vcentered">
+                            <AuthorizeView>
+                                <Authorized>
+                                    @context.User.Identity.Name&emsp;
+                                    <div class="button is-primary is-outlined" @onclick="Logout">
+                                        <strong>Log Out</strong>
+                                    </div>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <a class="button is-primary is-outlined" href="/login">
+                                        <strong>Log In</strong>
+                                    </a>
+                                </NotAuthorized>
+                            </AuthorizeView>
                         </div>
                     </div>
                 </div>
@@ -54,6 +71,13 @@
     public void Toggler()
     {
         collapseNavbar = !collapseNavbar;
+    }
+
+    private async void Logout()
+    {
+        await LocalStorage.RemoveItemAsync("isAuthed");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/");
     }
 
 }
