@@ -13,7 +13,7 @@ namespace coinStack.Shared
         public string Username { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        public int UserWatchlistId { get; set; }
+        public List<UserWatchlist> Watchlists { get; set; }
         public bool IsConfirmed { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime DateOfBirth { get; set; }

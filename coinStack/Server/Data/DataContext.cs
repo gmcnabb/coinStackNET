@@ -13,5 +13,7 @@ namespace coinStack.Server.Data
 
         public DbSet<Watchlist> Watchlists { get; set; }
         public DbSet<Coin> Coins { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserWatchlist> UserWatchlists { get; set; }
     }
 }

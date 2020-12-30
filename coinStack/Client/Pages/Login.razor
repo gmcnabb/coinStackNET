@@ -2,6 +2,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
+@inject coinStack.Client.Services.IAuthService AuthService
 
 <div class="container is-max-desktop">
     <AuthorizeView>
@@ -15,15 +16,15 @@
         </Authorized>
         <NotAuthorized Context="other">
             <h6 class="title is-6">Please log in below or <NavLink href="register">register</NavLink> a new account.</h6>
-            <EditForm Model="fakeUser" OnValidSubmit="HandleLogin" autocomplete="off">
+            <EditForm Model="user" OnValidSubmit="HandleLogin" autocomplete="off">
                 <DataAnnotationsValidator />
                 <div class="field">
-                    <label for="username">Username</label>
-                    <InputText id="username" @bind-Value="fakeUser.Username" class="input is-primary" />
+                    <label for="email">Email</label>
+                    <InputText id="email" @bind-Value="user.Email" class="input is-primary" />
                 </div>
                 <div class="field">
                     <label for="password">Password</label>
-                    <InputText id="password" @bind-Value="fakeUser.Password" type="password" class="input is-primary" />
+                    <InputText id="password" @bind-Value="user.Password" type="password" class="input is-primary" />
                 </div>
                 <button type="submit" class="button is-primary is-outlined">Log In</button>
                 <ValidationSummary />
@@ -33,17 +34,22 @@
 </div>
 
 @code {
-    private UserLogin fakeUser = new UserLogin();
+    private UserLogin user = new UserLogin();
 
     private async void HandleLogin()
     {
-        await LocalStorage.SetItemAsync<bool>("isAuthed", true);
-        await AuthStateProvider.GetAuthenticationStateAsync();
+        var result = await AuthService.Login(user);
+        if (result.Success)
+        {
+            await LocalStorage.SetItemAsync<string>("authToken", result.Data);
+            await AuthStateProvider.GetAuthenticationStateAsync();
+        }
+        else { Console.WriteLine(result.Message); }
     }
 
     private async void Logout()
     {
-        await LocalStorage.RemoveItemAsync("isAuthed");
+        await LocalStorage.RemoveItemAsync("authToken");
         await AuthStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/");
     }

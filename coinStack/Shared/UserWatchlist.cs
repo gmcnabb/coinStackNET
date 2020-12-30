@@ -10,6 +10,7 @@ namespace coinStack.Shared
     {
         public int Id { get; set; }
         public int WatchlistId { get; set; }
+        public Watchlist Watchlist { get; set; }
         public int UserId { get; set; }
     }
 }

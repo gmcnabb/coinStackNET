@@ -5,10 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Pages\Counter.razor" />
     <None Include="Pages\Index.razor" />
     <None Include="Shared\MainLayout.razor" />
-    <None Include="Shared\SurveyPrompt.razor" />
     <None Include="wwwroot\css\bootstrap\bootstrap.min.css.map" />
     <None Include="wwwroot\css\open-iconic\FONT-LICENSE" />
     <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.svg" />
