@@ -1,4 +1,5 @@
 ﻿using coinStack.Server.Data;
+using coinStack.Server.Services;
 using coinStack.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,18 +19,19 @@ namespace coinStack.Server.Controllers
     public class UserController : ControllerBase
     {
         private readonly DataContext _context;
-        public UserController(DataContext context)
+        private readonly IUtilityService _utilityService;
+
+        public UserController(DataContext context, IUtilityService utilityService)
         {
             _context = context;
+            _utilityService = utilityService;
         }
 
-        private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        private async Task<User> GetUser() => await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
 
         [HttpGet("GetWatchlists")]
         public async Task<IActionResult> GetWatchlists()
         {
-            var user = await GetUser();
+            var user = await _utilityService.GetUser();
             return Ok(user.Watchlists);
         }
 

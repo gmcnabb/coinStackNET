@@ -34,12 +34,11 @@ namespace coinStack.Client
 
             if (!string.IsNullOrEmpty(authToken))
             {
-                identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
-
                 try
                 {
-                    await _watchlistService.GetWatchlist();
+                    identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
+                    _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+                    await _watchlistService.GetWatchlists();
                 }
                 catch { await _localStorageService.RemoveItemAsync("authToken"); identity = new ClaimsIdentity(); }
             }
