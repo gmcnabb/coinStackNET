@@ -31,8 +31,8 @@ namespace coinStack.Server.Controllers
         [HttpGet("GetWatchlists")]
         public async Task<IActionResult> GetWatchlists()
         {
-            var user = await _utilityService.GetUser();
-            return Ok(user.Watchlists);
+            var watchlist = await _utilityService.GetUserWatchlist();
+            return Ok(watchlist);
         }
 
     }

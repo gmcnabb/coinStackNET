@@ -37,7 +37,7 @@ namespace coinStack.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCoin(int id, Coin coin)
         {
-            Coin dbCoin = await _context.Coins.FirstOrDefaultAsync(c => c.CoinId == id);
+            Coin dbCoin = await _context.Coins.FirstOrDefaultAsync(c => c.Id == id);
             if (dbCoin == null)
             {
                 return NotFound("Coin with given id not found");
@@ -55,7 +55,7 @@ namespace coinStack.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCoin(int id)
         {
-            Coin dbCoin = await _context.Coins.FirstOrDefaultAsync(c => c.CoinId == id);
+            Coin dbCoin = await _context.Coins.FirstOrDefaultAsync(c => c.Id == id);
             if (dbCoin == null)
             {
                 return NotFound("Coin with given id not found");

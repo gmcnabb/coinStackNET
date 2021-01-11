@@ -19,12 +19,12 @@ namespace coinStack.Client.Services
         }
 
         public event Action OnChange;
-        public List<Watchlist> Watchlists { get; set; } = null;
+        public List<UserWatchlist> Watchlists { get; set; } = null;
 
 
         public async Task GetWatchlists()
         {
-            Watchlists = await _http.GetFromJsonAsync<List<Watchlist>>("api/user/getwatchlists");
+            Watchlists = await _http.GetFromJsonAsync<List<UserWatchlist>>("api/user/getwatchlists");
             WatchlistsChanged();
         }
 

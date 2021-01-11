@@ -10,10 +10,12 @@ namespace coinStack.Server.Data
     public class DataContext : DbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-
-        public DbSet<Watchlist> Watchlists { get; set; }
-        public DbSet<Coin> Coins { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Coin> Coins { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<UserWatchlist> UserWatchlists { get; set; }
+        public DbSet<WatchlistCoin> WatchlistCoins { get; set; }
+        public DbSet<UserPortfolio> UserPortfolios { get; set; }
+        public DbSet<PortfolioTransaction> PortfolioTransactions { get; set; }
     }
 }

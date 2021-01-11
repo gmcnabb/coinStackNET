@@ -9,5 +9,6 @@ namespace coinStack.Server.Services
     public interface IUtilityService
     {
         Task<User> GetUser();
+        Task<UserWatchlist> GetUserWatchlist();
     }
 }

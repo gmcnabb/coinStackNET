@@ -21,7 +21,7 @@ namespace coinStack.Client.Services
 
         public void AddCoin(int CoinId)
         {
-            Coin coin = Coins.First(coin => coin.CoinId == CoinId);
+            Coin coin = Coins.First(coin => coin.Id == CoinId);
 
         }
 

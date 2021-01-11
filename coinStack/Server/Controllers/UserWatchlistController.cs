@@ -32,7 +32,7 @@ namespace coinStack.Server.Controllers
 
             UserWatchlist newUserWatchlist = new UserWatchlist
             {
-                WatchlistId = watchlistId,
+                Id = watchlistId,
                 UserId = user.Id
             };
 

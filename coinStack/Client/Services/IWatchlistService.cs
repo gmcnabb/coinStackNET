@@ -9,7 +9,7 @@ namespace coinStack.Client.Services
     public interface IWatchlistService
     {
         event Action OnChange;
-        List<Watchlist> Watchlists { get; set; }
+        List<UserWatchlist> Watchlists { get; set; }
         Task GetWatchlists();
     }
 }
