@@ -16,5 +16,6 @@ namespace coinStack.Shared
         public int UserWatchlistId { get; set; }
         [Required]
         public int CoinId { get; set; }
+        public Coin Coin { get; set; }
     }
 }

@@ -23,7 +23,7 @@
     <div>
         @foreach (var Coin in CoinService.Coins)
         {
-            <div>@Coin.name</div>
+            <div>@Coin.GeckoName</div>
         }
     </div>
 </div>
@@ -42,11 +42,11 @@
         {
             this.values = coinIds;
             this.userId = userId;
-            this.id = postId;
+            this.GeckoId = postId;
         }
         public string[] values { get; set; }
         public string userId { get; set; }
-        public string id { get; set; }
+        public string GeckoId { get; set; }
     }
 
 }

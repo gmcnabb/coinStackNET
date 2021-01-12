@@ -12,10 +12,10 @@ namespace coinStack.Shared
         [Key]
         public int Id { get; set; }
         [Required]
-        public string id { get; set; }
+        public string GeckoId { get; set; }
         [Required]
-        public string name { get; set; }
+        public string GeckoName { get; set; }
         [Required]
-        public string symbol { get; set; }
+        public string GeckoSymbol { get; set; }
     }
 }

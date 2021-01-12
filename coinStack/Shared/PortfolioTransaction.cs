@@ -14,5 +14,6 @@ namespace coinStack.Shared
         public int Id { get; set; }
         public int UserPortfolioId { get; set; }
         public int TransactionId { get; set; }
+        public Transaction Transaction { get; set; }
     }
 }

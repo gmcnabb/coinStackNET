@@ -43,9 +43,9 @@ namespace coinStack.Server.Controllers
                 return NotFound("Coin with given id not found");
             }
 
-            dbCoin.id = coin.id;
-            dbCoin.name = coin.name;
-            dbCoin.symbol = coin.symbol;
+            dbCoin.GeckoId = coin.GeckoId;
+            dbCoin.GeckoName = coin.GeckoName;
+            dbCoin.GeckoSymbol = coin.GeckoSymbol;
 
             await _context.SaveChangesAsync();
 
