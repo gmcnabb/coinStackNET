@@ -1,0 +1,22 @@
+﻿@page "/settings"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+@inject coinStack.Client.Services.IAuthService AuthService
+
+<div class="container is-max-desktop">
+    Settings
+    <AuthorizeView>
+        <Authorized>
+            <div class="box has-text-centered">
+                <h6 class="title is-6">You are logged in as: @context.User.Identity.Name</h6>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <h6 class="title is-6">Please log in or <NavLink href="register">register</NavLink> a new account.</h6>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+
+}

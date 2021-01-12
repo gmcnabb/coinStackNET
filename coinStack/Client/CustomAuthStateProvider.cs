@@ -16,13 +16,13 @@ namespace coinStack.Client
     {
         private readonly ILocalStorageService _localStorageService;
         private readonly HttpClient _http;
-        private readonly IWatchlistService _watchlistService;
+        //private readonly IWatchlistService _watchlistService;
 
-        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient http, IWatchlistService watchlistService)
+        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient http)
         {
             _localStorageService = localStorageService;
             _http = http;
-            _watchlistService = watchlistService;
+            //_watchlistService = watchlistService;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -38,7 +38,7 @@ namespace coinStack.Client
                 {
                     identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
                     _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
-                    await _watchlistService.GetWatchlists();
+                    //await _watchlistService.GetWatchlists();
                 }
                 catch { await _localStorageService.RemoveItemAsync("authToken"); identity = new ClaimsIdentity(); }
             }
