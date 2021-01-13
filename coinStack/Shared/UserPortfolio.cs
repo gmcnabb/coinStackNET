@@ -13,6 +13,7 @@ namespace coinStack.Shared
         [Key]
         public int Id { get; set; }
         public int UserId { get; set; }
+        public bool CurrentlySelected { get; set; }
         public List<PortfolioTransaction> PortfolioTransactions { get; set; }
     }
 }
