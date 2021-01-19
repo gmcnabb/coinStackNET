@@ -65,12 +65,12 @@ namespace coinStack.Server.Data
             await _context.SaveChangesAsync();
 
 
-            UserWatchlist newWatchlist = new UserWatchlist() { UserId = user.Id, CurrentlySelected = true };
+            UserWatchlist newWatchlist = new UserWatchlist() { UserId = user.Id, CurrentlySelected = true, Name = "default" };
             await _context.UserWatchlists.AddAsync(newWatchlist);
             await _context.SaveChangesAsync();
 
 
-            UserPortfolio newPortfolio = new UserPortfolio() { UserId = user.Id, CurrentlySelected = true };
+            UserPortfolio newPortfolio = new UserPortfolio() { UserId = user.Id, CurrentlySelected = true, Name = "default" };
             await _context.UserPortfolios.AddAsync(newPortfolio);
             await _context.SaveChangesAsync();
 

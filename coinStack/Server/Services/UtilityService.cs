@@ -32,5 +32,11 @@ namespace coinStack.Server.Services
             var watchlist = await _context.UserWatchlists.FirstOrDefaultAsync(u => u.UserId == userId);
             return watchlist;
         }
+        public async Task<List<UserWatchlist>> GetUserWatchlists()
+        {
+            var userId = int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var watchlists = await _context.UserWatchlists.Where(u => u.UserId == userId).ToListAsync();
+            return watchlists;
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace coinStack.Server.Services
     {
         Task<User> GetUser();
         Task<UserWatchlist> GetUserWatchlist();
+        Task<List<UserWatchlist>> GetUserWatchlists();
     }
 }

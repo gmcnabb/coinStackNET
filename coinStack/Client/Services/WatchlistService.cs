@@ -24,8 +24,7 @@ namespace coinStack.Client.Services
 
         public async Task GetWatchlists()
         {
-            Watchlists = await _http.GetFromJsonAsync<List<UserWatchlist>>("api/user/getwatchlists");
-            WatchlistsChanged();
+            Watchlists = await _http.GetFromJsonAsync<List<UserWatchlist>>("api/userwatchlist/getwatchlists");
         }
 
         void WatchlistsChanged() => OnChange.Invoke();
