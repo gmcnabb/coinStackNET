@@ -12,5 +12,6 @@ namespace coinStack.Client.Services
         List<UserPortfolio> Portfolios { get; set; }
         Task GetPortfolios();
         Task<ServiceResponse<UserPortfolio>> UpdatePortfolio(UserPortfolio portfolio);
+        Task<ServiceResponse<UserPortfolio>> AddPortfolio(UserPortfolio portfolio);
     }
 }

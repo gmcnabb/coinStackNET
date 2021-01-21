@@ -28,6 +28,11 @@ namespace coinStack.Client.Services
             var result = await _http.PostAsJsonAsync<UserPortfolio>("api/userportfolio/updateportfolio", portfolio);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<UserPortfolio>>();
         }
+        public async Task<ServiceResponse<UserPortfolio>> AddPortfolio(UserPortfolio portfolio)
+        {
+            var result = await _http.PostAsJsonAsync<UserPortfolio>("api/userportfolio/addportfolio", portfolio);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<UserPortfolio>>();
+        }
 
         void PortfoliosChanged() => OnChange.Invoke();
     }

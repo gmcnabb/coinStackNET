@@ -40,11 +40,11 @@ namespace coinStack.Server.Controllers
         public async Task<IActionResult> UpdatePortfolio([FromBody] UserPortfolio portfolio)
         {
             var user = await _utilityService.GetUser();
-            var originalPortfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.Id == portfolio.Id);
+            var originalPortfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.Id == portfolio.Id && u.UserId == user.Id);
 
             if (originalPortfolio == null)
             {
-                return BadRequest($"Portfolio with id: {portfolio.Id} not found in the database.");
+                return BadRequest($"Portfolio with id: {portfolio.Id} not found for user with id: {user.Id}.");
             }
 
             var currentlySelectedPortfolio = await _context.UserPortfolios.FirstOrDefaultAsync(u => u.CurrentlySelected == true);
@@ -57,6 +57,18 @@ namespace coinStack.Server.Controllers
             originalPortfolio.CurrentlySelected = portfolio.CurrentlySelected;
             await _context.SaveChangesAsync();
             return Ok(originalPortfolio);
+        }
+
+        [HttpPost("AddPortfolio")]
+        public async Task<IActionResult> AddPortfolio([FromBody] UserPortfolio portfolio)
+        {
+            var user = await _utilityService.GetUser();
+            portfolio.UserId = user.Id;
+            portfolio.CurrentlySelected = false;
+
+            await _context.AddAsync<UserPortfolio>(portfolio);
+            await _context.SaveChangesAsync();
+            return Ok(portfolio);
         }
     }
 }
