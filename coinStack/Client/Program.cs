@@ -28,7 +28,6 @@ namespace coinStack.Client
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
             builder.Services.AddScoped<ICoinService, CoinService>();
-            builder.Services.AddScoped<IWatchlistService, WatchlistService>();
             builder.Services.AddScoped<IPortfolioService, PortfolioService>();
 
 

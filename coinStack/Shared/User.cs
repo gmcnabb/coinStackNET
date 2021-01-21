@@ -17,7 +17,6 @@ namespace coinStack.Shared
         public bool IsDeleted { get; set; }
         public DateTime DateOfBirth { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
-        public List<UserWatchlist> UserWatchlists { get; set; }
         public List<UserPortfolio> UserPortfolios { get; set; }
     }
 }

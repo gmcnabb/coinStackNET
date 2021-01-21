@@ -13,9 +13,8 @@ namespace coinStack.Server.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Coin> Coins { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<UserWatchlist> UserWatchlists { get; set; }
-        public DbSet<WatchlistCoin> WatchlistCoins { get; set; }
         public DbSet<UserPortfolio> UserPortfolios { get; set; }
         public DbSet<PortfolioTransaction> PortfolioTransactions { get; set; }
+        public DbSet<PortfolioCoin> PortfolioCoins { get; set; }
     }
 }

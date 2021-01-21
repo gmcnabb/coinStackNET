@@ -16,5 +16,6 @@ namespace coinStack.Shared
         public string Name { get; set; }
         public bool CurrentlySelected { get; set; }
         public List<PortfolioTransaction> PortfolioTransactions { get; set; }
+        public List<PortfolioCoin> PortfolioCoins { get; set; }
     }
 }

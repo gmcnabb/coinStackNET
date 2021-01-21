@@ -4,7 +4,6 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthStateProvider
 @inject coinStack.Client.Services.IAuthService AuthService
-@inject coinStack.Client.Services.IWatchlistService WatchlistService
 @inject coinStack.Client.Services.IPortfolioService PortfolioService
 
 <div class="container is-max-desktop">
@@ -30,20 +29,7 @@
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                             <div class="dropdown-content" style="width:180px;">
-                                @try
-                                {
-                                    @foreach (UserWatchlist w in WatchlistService.Watchlists)
-                                    {
-                                        <a href="#" class="dropdown-item">
-                                            @w.Name @if (w.CurrentlySelected)
-                                            {<span>*</span>}
-                                        </a>
-                                    }
-                                }
-                                catch
-                                {
-                                    <p>Loading...</p>
-                                }
+                                <p>blah</p>
                             </div>
                         </div>
                     </div>
@@ -142,7 +128,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await WatchlistService.GetWatchlists();
         await PortfolioService.GetPortfolios();
     }
 
@@ -156,13 +141,13 @@
         collapsePortfolioDropdown = !collapsePortfolioDropdown;
     }
 
-    private async void ChangeWatchlist(int watchlistId)
-    {
-        var result = await WatchlistService.ChangeWatchlist(watchlistId);
-        if (!result.Success)
+    @*private async void ChangeWatchlist(int watchlistId)
         {
-            Console.WriteLine(result.Message);
-        }
-    }
+            var result = await WatchlistService.ChangeWatchlist(watchlistId);
+            if (!result.Success)
+            {
+                Console.WriteLine(result.Message);
+            }
+        }*@
 
 }
