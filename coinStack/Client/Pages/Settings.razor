@@ -5,6 +5,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject coinStack.Client.Services.IAuthService AuthService
 @inject coinStack.Client.Services.IWatchlistService WatchlistService
+@inject coinStack.Client.Services.IPortfolioService PortfolioService
 
 <div class="container is-max-desktop">
     <AuthorizeView>
@@ -33,7 +34,10 @@
                                 {
                                     @foreach (UserWatchlist w in WatchlistService.Watchlists)
                                     {
-                                        <a href="#" class="dropdown-item">@w.Id</a>
+                                        <a href="#" class="dropdown-item">
+                                            @w.Name @if (w.CurrentlySelected)
+                                            {<span>*</span>}
+                                        </a>
                                     }
                                 }
                                 catch
@@ -43,7 +47,7 @@
                             </div>
                         </div>
                     </div>
-                    <button class="button is-primary is-outlined">
+                    <a class="button is-primary is-outlined" href="/addwatchlist">
                         <svg aria-hidden="true" focusable="false" data-prefix="fas"
                              data-icon="plus" class="svg-inline--fa fa-plus fa-w-14"
                              role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
@@ -51,7 +55,7 @@
                              width="12">
                             <path fill="#fb9215" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
                         </svg>
-                    </button>
+                    </a>
                     <button class="button is-primary is-outlined">
                         <svg aria-hidden="true" focusable="false" data-prefix="far"
                              data-icon="edit" class="svg-inline--fa fa-edit fa-w-18" role="img"
@@ -83,12 +87,20 @@
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                             <div class="dropdown-content" style="width:180px;">
-                                <a href="#" class="dropdown-item">
-                                    Overview
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    Modifiers
-                                </a>
+                                @try
+                                {
+                                    @foreach (UserPortfolio p in PortfolioService.Portfolios)
+                                    {
+                                        <a href="#" class="dropdown-item">
+                                            @p.Name @if (p.CurrentlySelected)
+                                            {<span>*</span>}
+                                        </a>
+                                    }
+                                }
+                                catch
+                                {
+                                    <p>Loading...</p>
+                                }
                             </div>
                         </div>
                     </div>
@@ -131,6 +143,7 @@
     protected override async Task OnInitializedAsync()
     {
         await WatchlistService.GetWatchlists();
+        await PortfolioService.GetPortfolios();
     }
 
     public void WatchlistToggler()
@@ -141,6 +154,15 @@
     public void PortfolioToggler()
     {
         collapsePortfolioDropdown = !collapsePortfolioDropdown;
+    }
+
+    private async void ChangeWatchlist(int watchlistId)
+    {
+        var result = await WatchlistService.ChangeWatchlist(watchlistId);
+        if (!result.Success)
+        {
+            Console.WriteLine(result.Message);
+        }
     }
 
 }

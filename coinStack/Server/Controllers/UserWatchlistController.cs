@@ -17,6 +17,7 @@ namespace coinStack.Server.Controllers
     {
         private readonly DataContext _context;
         private readonly IUtilityService _utilityService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserWatchlistController(DataContext context, IUtilityService utilityService)
         {
@@ -27,7 +28,8 @@ namespace coinStack.Server.Controllers
         [HttpGet("GetWatchlists")]
         public async Task<IActionResult> GetWatchlists()
         {
-            var watchlists = await _utilityService.GetUserWatchlists();
+            var user = await _utilityService.GetUser();
+            var watchlists = await _context.UserWatchlists.Where(u => u.UserId == user.Id).ToListAsync();
             if (watchlists == null)
             {
                 return BadRequest("no watchlists found for this user");
@@ -51,6 +53,25 @@ namespace coinStack.Server.Controllers
             await _context.SaveChangesAsync();
             return Ok(newUserWatchlist);
 
+        }
+
+        [HttpPost("ChangeWatchlist")]
+        public async Task<IActionResult> ChangeWatchlist([FromBody] int watchlistId)
+        {
+            var user = _utilityService.GetUser();
+            var watchlist = await _context.UserWatchlists.FirstOrDefaultAsync<UserWatchlist>(u => u.UserId == user.Id && u.CurrentlySelected == true);
+            var newWatchlist = await _context.UserWatchlists.FirstOrDefaultAsync<UserWatchlist>(u => u.Id == watchlistId && u.UserId == user.Id);
+
+            if (watchlist == null || newWatchlist == null)
+            {
+                return BadRequest("selected watchlists not found for this user");
+            }
+
+            watchlist.CurrentlySelected = false;
+            newWatchlist.CurrentlySelected = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(newWatchlist);
         }
     }
 }

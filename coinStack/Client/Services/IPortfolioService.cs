@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace coinStack.Client.Services
 {
-    public interface IWatchlistService
+    public interface IPortfolioService
     {
         event Action OnChange;
-        List<UserWatchlist> Watchlists { get; set; }
-        Task GetWatchlists();
-        Task<ServiceResponse<int>> ChangeWatchlist(int id);
+        List<UserPortfolio> Portfolios { get; set; }
+        Task GetPortfolios();
+        Task<ServiceResponse<int>> ChangePortfolio(int portfolioId);
     }
 }
