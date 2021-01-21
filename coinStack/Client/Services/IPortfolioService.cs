@@ -11,6 +11,6 @@ namespace coinStack.Client.Services
         event Action OnChange;
         List<UserPortfolio> Portfolios { get; set; }
         Task GetPortfolios();
-        Task<ServiceResponse<int>> ChangePortfolio(int portfolioId);
+        Task<ServiceResponse<UserPortfolio>> UpdatePortfolio(UserPortfolio portfolio);
     }
 }

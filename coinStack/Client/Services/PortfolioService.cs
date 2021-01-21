@@ -22,15 +22,13 @@ namespace coinStack.Client.Services
         public async Task GetPortfolios()
         {
             Portfolios = await _http.GetFromJsonAsync<List<UserPortfolio>>("api/userportfolio/getportfolios");
-
         }
-        public async Task<ServiceResponse<int>> ChangePortfolio(int portfolioId)
+        public async Task<ServiceResponse<UserPortfolio>> UpdatePortfolio(UserPortfolio portfolio)
         {
-            var result = await _http.PostAsJsonAsync<int>("api/userportfolio/changeportfolio", portfolioId);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            var result = await _http.PostAsJsonAsync<UserPortfolio>("api/userportfolio/updateportfolio", portfolio);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<UserPortfolio>>();
         }
 
         void PortfoliosChanged() => OnChange.Invoke();
-
     }
 }

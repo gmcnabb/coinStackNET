@@ -22,7 +22,6 @@ namespace coinStack.Client
         {
             _localStorageService = localStorageService;
             _http = http;
-            //_watchlistService = watchlistService;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -38,7 +37,6 @@ namespace coinStack.Client
                 {
                     identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
                     _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
-                    //await _watchlistService.GetWatchlists();
                 }
                 catch { await _localStorageService.RemoveItemAsync("authToken"); identity = new ClaimsIdentity(); }
             }

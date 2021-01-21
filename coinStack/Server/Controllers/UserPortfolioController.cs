@@ -36,41 +36,27 @@ namespace coinStack.Server.Controllers
             return Ok(portfolios);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> BuildUserPortfolio([FromBody] int portfolioId)
+        [HttpPost("UpdatePortfolio")]
+        public async Task<IActionResult> UpdatePortfolio([FromBody] UserPortfolio portfolio)
         {
-            var portfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.Id == portfolioId);
             var user = await _utilityService.GetUser();
+            var originalPortfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.Id == portfolio.Id);
 
-            UserPortfolio newUserPortfolio = new UserPortfolio
+            if (originalPortfolio == null)
             {
-                Id = portfolioId,
-                UserId = user.Id
-            };
-
-            await _context.UserPortfolios.AddAsync(newUserPortfolio);
-            await _context.SaveChangesAsync();
-            return Ok(newUserPortfolio);
-
-        }
-
-        [HttpPost("ChangePortfolio")]
-        public async Task<IActionResult> ChangePortfolio([FromBody] int portfolioId)
-        {
-            var user = _utilityService.GetUser();
-            var portfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.UserId == user.Id && u.CurrentlySelected == true);
-            var newPortfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.Id == portfolioId && u.UserId == user.Id);
-
-            if (portfolio == null || newPortfolio == null)
-            {
-                return BadRequest("Selected portfolios not found for this user.");
+                return BadRequest($"Portfolio with id: {portfolio.Id} not found in the database.");
             }
 
-            portfolio.CurrentlySelected = false;
-            newPortfolio.CurrentlySelected = true;
-            await _context.SaveChangesAsync();
+            var currentlySelectedPortfolio = await _context.UserPortfolios.FirstOrDefaultAsync(u => u.CurrentlySelected == true);
+            if (portfolio.CurrentlySelected && currentlySelectedPortfolio != null)
+            {
+                currentlySelectedPortfolio.CurrentlySelected = false;
+            }
 
-            return Ok(newPortfolio);
+            originalPortfolio.Name = portfolio.Name;
+            originalPortfolio.CurrentlySelected = portfolio.CurrentlySelected;
+            await _context.SaveChangesAsync();
+            return Ok(originalPortfolio);
         }
     }
 }
