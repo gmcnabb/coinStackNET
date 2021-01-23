@@ -19,9 +19,9 @@ namespace coinStack.Client.Services
 
         public IList<Coin> Coins { get; set; } = new List<Coin>();
 
-        public void AddCoin(int CoinId)
+        public void AddCoin(string CoinId)
         {
-            Coin coin = Coins.First(coin => coin.Id == CoinId);
+            Coin coin = Coins.First(coin => coin.id == CoinId);
         }
 
         public async Task LoadCoinsAsync()

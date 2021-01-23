@@ -10,7 +10,7 @@ namespace coinStack.Client.Services
     {
         IList<Coin> Coins { get; set; }
 
-        void AddCoin(int CoinId);
+        void AddCoin(string CoinId);
         Task LoadCoinsAsync();
     }
 }

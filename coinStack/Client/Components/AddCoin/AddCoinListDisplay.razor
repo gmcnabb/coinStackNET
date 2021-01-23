@@ -9,9 +9,9 @@
             {
                 <li>
                     <div class="columns is-gapless is-mobile mb-0">
-                        <div class="button is-info is-outlined is-rounded is-fullwidth mb-0" @onclick="@AddToWatchlist">
+                        <div class="button is-info is-outlined is-rounded is-fullwidth mb-0" @onclick="() => AddToWatchlist(c)">
                             <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
-                                @c.name&emsp;@c.symbol
+                                @c.name&emsp;@c.symbol.ToUpper()
                             </div>
                         </div>
                     </div>
@@ -33,6 +33,8 @@
     {
         public string symbol { get; set; }
         public string name { get; set; }
+        public string id { get; set; }
+        public string image { get; set; }
     }
 
     protected override async Task OnParametersSetAsync()
@@ -44,7 +46,6 @@
     {
         if (DateTime.Now - lastFetch > new TimeSpan(0, 0, 1) || firstFetch == true)
         {
-            Console.WriteLine(DateTime.Now - lastFetch);
             int pageNum = pagesFetched;
             pagesFetched++;
             List<Coin> fetchedCoins = await Http.GetFromJsonAsync<List<Coin>>
@@ -55,9 +56,11 @@
         }
     }
 
-    public async Task<bool> AddToWatchlist()
+    public void AddToWatchlist(Coin c)
     {
-        Console.WriteLine("ok");
-        return true;
+        Console.WriteLine(c.name);
+        Console.WriteLine(c.symbol);
+        Console.WriteLine(c.id);
+        Console.WriteLine(c.image);
     }
 }

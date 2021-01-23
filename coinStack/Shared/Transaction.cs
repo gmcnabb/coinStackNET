@@ -15,12 +15,13 @@ namespace coinStack.Shared
         [Required]
         public bool Type { get; set; }
         [Required]
-        public int CoinId { get; set; }
+        public string Coinid { get; set; }
         [Required]
         public int Quantity { get; set; }
         [Required]
         public int USDValue { get; set; }
         [Required]
         public DateTime DateCreated { get; set; }
+        public Coin Coin { get; set; }
     }
 }

@@ -3,50 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using coinStack.Server.Data;
 
 namespace coinStack.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210122234409_dropCoin")]
+    partial class dropCoin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
-
-            modelBuilder.Entity("coinStack.Shared.Coin", b =>
-                {
-                    b.Property<string>("id")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("image")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("last_updated")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("symbol")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("Coins");
-                });
 
             modelBuilder.Entity("coinStack.Shared.PortfolioCoin", b =>
                 {
@@ -55,16 +28,10 @@ namespace coinStack.Server.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<string>("Coinid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<int>("UserPortfolioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Coinid");
 
                     b.HasIndex("UserPortfolioId");
 
@@ -100,10 +67,6 @@ namespace coinStack.Server.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<string>("Coinid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -117,8 +80,6 @@ namespace coinStack.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Coinid");
 
                     b.ToTable("Transactions");
                 });
@@ -184,19 +145,11 @@ namespace coinStack.Server.Migrations
 
             modelBuilder.Entity("coinStack.Shared.PortfolioCoin", b =>
                 {
-                    b.HasOne("coinStack.Shared.Coin", "Coin")
-                        .WithMany()
-                        .HasForeignKey("Coinid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("coinStack.Shared.UserPortfolio", null)
                         .WithMany("PortfolioCoins")
                         .HasForeignKey("UserPortfolioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Coin");
                 });
 
             modelBuilder.Entity("coinStack.Shared.PortfolioTransaction", b =>
@@ -214,17 +167,6 @@ namespace coinStack.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Transaction");
-                });
-
-            modelBuilder.Entity("coinStack.Shared.Transaction", b =>
-                {
-                    b.HasOne("coinStack.Shared.Coin", "Coin")
-                        .WithMany()
-                        .HasForeignKey("Coinid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Coin");
                 });
 
             modelBuilder.Entity("coinStack.Shared.UserPortfolio", b =>

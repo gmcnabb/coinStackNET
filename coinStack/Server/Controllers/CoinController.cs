@@ -35,17 +35,17 @@ namespace coinStack.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCoin(int id, Coin coin)
+        public async Task<IActionResult> UpdateCoin(string id, Coin coin)
         {
-            Coin dbCoin = await _context.Coins.FirstOrDefaultAsync(c => c.Id == id);
+            Coin dbCoin = await _context.Coins.FirstOrDefaultAsync(c => c.id == id);
             if (dbCoin == null)
             {
                 return NotFound("Coin with given id not found");
             }
 
-            dbCoin.GeckoId = coin.GeckoId;
-            dbCoin.GeckoName = coin.GeckoName;
-            dbCoin.GeckoSymbol = coin.GeckoSymbol;
+            dbCoin.id = coin.id;
+            dbCoin.name = coin.name;
+            dbCoin.symbol = coin.symbol;
 
             await _context.SaveChangesAsync();
 
@@ -53,9 +53,9 @@ namespace coinStack.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCoin(int id)
+        public async Task<IActionResult> DeleteCoin(string id)
         {
-            Coin dbCoin = await _context.Coins.FirstOrDefaultAsync(c => c.Id == id);
+            Coin dbCoin = await _context.Coins.FirstOrDefaultAsync(c => c.id == id);
             if (dbCoin == null)
             {
                 return NotFound("Coin with given id not found");

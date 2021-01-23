@@ -23,7 +23,7 @@
     <div>
         @foreach (var Coin in CoinService.Coins)
         {
-            <div>@Coin.GeckoName</div>
+            <div>@Coin.name</div>
         }
     </div>
 </div>
@@ -33,20 +33,4 @@
     {
         await CoinService.LoadCoinsAsync();
     }
-
-    public WatchlistEntry watchlist;
-
-    public class WatchlistEntry
-    {
-        public WatchlistEntry(string[] coinIds, string userId, string postId)
-        {
-            this.values = coinIds;
-            this.userId = userId;
-            this.GeckoId = postId;
-        }
-        public string[] values { get; set; }
-        public string userId { get; set; }
-        public string GeckoId { get; set; }
-    }
-
 }

@@ -14,7 +14,7 @@ namespace coinStack.Shared
         [Required]
         public int UserPortfolioId { get; set; }
         [Required]
-        public int CoinId { get; set; }
+        public string Coinid { get; set; }
         public Coin Coin { get; set; }
     }
 }
