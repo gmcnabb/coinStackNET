@@ -19,19 +19,37 @@ namespace coinStack.Server.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCoins()
+        [HttpGet("{id}")]
+        public IActionResult GetCoin(string id)
+        {
+            var coin = _context.Coins.Find(id);
+            return Ok(coin);
+        }
+
+        [HttpGet("GetAllCoins")]
+        public async Task<IActionResult> GetAllCoins()
         {
             var coins = await _context.Coins.ToListAsync();
             return Ok(coins);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddCoin(Coin coin)
+        [HttpGet("CheckForCoin/{id}")]
+        public IActionResult CheckForCoin(string id)
         {
+            bool exists = _context.Coins.Any(c => c.id == id);
+            return Ok(exists);
+        }
+
+        [HttpPost("AddCoin")]
+        public async Task<IActionResult> AddCoin([FromBody] Coin coin)
+        {
+            if (_context.Coins.Any(c => c.id == coin.id))
+            {
+                return BadRequest("This coin already exists in the database");
+            }
             await _context.Coins.AddAsync(coin);
             await _context.SaveChangesAsync();
-            return Ok(await _context.Coins.ToListAsync());
+            return Ok(_context.Coins.Find(coin.id));
         }
 
         [HttpPut("{id}")]

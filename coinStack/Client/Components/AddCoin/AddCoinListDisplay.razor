@@ -1,26 +1,39 @@
 ﻿@using System.Net.Http
-@inject HttpClient Http
 @using Sve.Blazor.InfiniteScroll.Components
+@inject HttpClient Http
+@inject coinStack.Client.Services.ICoinService CoinService
 
-<div style="height: 500px; overflow-y: auto">
-    <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReached="(e) => FetchCoins()">
-        <ul>
-            @foreach (Coin c in coinList)
-            {
-                <li>
-                    <div class="columns is-gapless is-mobile mb-0">
-                        <div class="button is-info is-outlined is-rounded is-fullwidth mb-0" @onclick="() => AddToWatchlist(c)">
-                            <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
-                                @c.name&emsp;@c.symbol.ToUpper()
+<AuthorizeView>
+    <Authorized>
+        <div style="height: 500px; overflow-y: auto">
+            <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReached="(e) => FetchCoins()">
+                <ul>
+                    @foreach (Coin c in coinList)
+                    {
+                        <li>
+                            <div class="columns is-gapless mb-0">
+                                <div class="button is-info is-outlined is-rounded is-fullwidth mb-0" @onclick="() => AddToPortfolio(c)">
+                                    <div class="column has-text-right is-5 is-5-mobile" style="text-overflow: ellipsis; overflow-x: hidden">
+                                        <img alt="@c.id logo" src="@c.image" style="height: 36px; width: 36px; vertical-align: middle" />
+                                    </div>
+                                    <div class="column has-text-left is-7 is-7-mobile" style="text-overflow: ellipsis; overflow-x: hidden">
+                                        @c.name&emsp;@c.symbol.ToUpper()
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </li>
-            }
-        </ul>
-        <li id="observerTarget">Loading...</li>
-    </InfiniteScroll>
-</div>
+                        </li>
+                    }
+                </ul>
+                <li id="observerTarget">Loading...</li>
+            </InfiniteScroll>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="box has-text-centered">
+            <h6 class="title is-6">Please <NavLink href="login">Log in</NavLink> or <NavLink href="register">register</NavLink> a new account to add coins to your portfolio.</h6>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private string COINGECKO_COINS = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100";
@@ -28,14 +41,6 @@
     private DateTime lastFetch = DateTime.Now;
     private bool firstFetch = true;
     private int pagesFetched = 0;
-
-    public class Coin
-    {
-        public string symbol { get; set; }
-        public string name { get; set; }
-        public string id { get; set; }
-        public string image { get; set; }
-    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -56,11 +61,22 @@
         }
     }
 
-    public void AddToWatchlist(Coin c)
+    public async Task AddToPortfolio(Coin c)
     {
-        Console.WriteLine(c.name);
-        Console.WriteLine(c.symbol);
-        Console.WriteLine(c.id);
-        Console.WriteLine(c.image);
+        var exists = await CoinService.CheckForCoin(c.id);
+        if (!exists)
+        {
+            var addCoinResult = await CoinService.AddCoin(c);
+            if (addCoinResult.Success)
+            {
+                var buildPortfolioCoinResult = await CoinService.AddPortfolioCoin(c.id);
+                if (!buildPortfolioCoinResult.Success) { Console.WriteLine(buildPortfolioCoinResult.Message); }
+            }
+        }
+        else
+        {
+            var buildPortfolioCoinResult = await CoinService.AddPortfolioCoin(c.id);
+            if (!buildPortfolioCoinResult.Success) { Console.WriteLine(buildPortfolioCoinResult.Message); }
+        }
     }
 }

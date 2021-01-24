@@ -8,9 +8,13 @@ namespace coinStack.Client.Services
 {
     public interface ICoinService
     {
+        event Action OnChange;
         IList<Coin> Coins { get; set; }
-
-        void AddCoin(string CoinId);
+        IList<PortfolioCoin> PortfolioCoins { get; set; }
+        Task<bool> CheckForCoin(string coinId);
+        Task<ServiceResponse<Coin>> AddCoin(Coin coin);
         Task LoadCoinsAsync();
+        Task LoadPortfolioCoinsAsync();
+        Task<ServiceResponse<PortfolioCoin>> AddPortfolioCoin(string coinId);
     }
 }

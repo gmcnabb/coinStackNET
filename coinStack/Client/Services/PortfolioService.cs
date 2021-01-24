@@ -17,11 +17,11 @@ namespace coinStack.Client.Services
         }
 
         public event Action OnChange;
-        public List<UserPortfolio> Portfolios { get; set; }
+        public IList<UserPortfolio> Portfolios { get; set; }
 
         public async Task GetPortfolios()
         {
-            Portfolios = await _http.GetFromJsonAsync<List<UserPortfolio>>("api/userportfolio/getportfolios");
+            Portfolios = await _http.GetFromJsonAsync<IList<UserPortfolio>>("api/userportfolio/getportfolios");
         }
         public async Task<ServiceResponse<UserPortfolio>> UpdatePortfolio(UserPortfolio portfolio)
         {

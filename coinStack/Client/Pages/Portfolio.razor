@@ -21,9 +21,25 @@
         </div>
     </div>
     <div>
-        @foreach (var Coin in CoinService.Coins)
+        @if (CoinService.Coins == null)
         {
-            <div>@Coin.name</div>
+            <div>loading...</div>
+        }
+        else
+        {
+            foreach (Coin c in CoinService.Coins)
+            {
+                <div class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;">
+                    <div class="columns is-gapless is-mobile is-vcentered pr-4">
+                        <div class="column">
+                            <img alt="@c.id logo" src="@c.image" style="height: 46px; width: 46px; vertical-align: middle" />
+                            &emsp;@c.name
+                        </div>
+                        <div class="column has-text-centered">placeholder</div>
+                        <div class="column has-text-right">@c.symbol.ToUpper()</div>
+                    </div>
+                </div>
+            }
         }
     </div>
 </div>
@@ -31,6 +47,8 @@
 @code{
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("oninit");
+        await CoinService.LoadPortfolioCoinsAsync();
         await CoinService.LoadCoinsAsync();
     }
 }

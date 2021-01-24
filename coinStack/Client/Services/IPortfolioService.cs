@@ -9,7 +9,7 @@ namespace coinStack.Client.Services
     public interface IPortfolioService
     {
         event Action OnChange;
-        List<UserPortfolio> Portfolios { get; set; }
+        IList<UserPortfolio> Portfolios { get; set; }
         Task GetPortfolios();
         Task<ServiceResponse<UserPortfolio>> UpdatePortfolio(UserPortfolio portfolio);
         Task<ServiceResponse<UserPortfolio>> AddPortfolio(UserPortfolio portfolio);
