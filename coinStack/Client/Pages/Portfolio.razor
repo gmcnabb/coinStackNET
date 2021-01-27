@@ -20,16 +20,16 @@
             </div>
         </div>
     </div>
-    <div>
+    <div style="height: 500px; overflow-y: auto">
         @if (CoinService.Coins.Count == 0)
         {
-            <div>loading...  select a portfolio (or create a new one) on the settings page</div>
+            <div>loading...</div>
         }
         else
         {
             foreach (Coin c in CoinService.Coins)
             {
-                <div class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;">
+                <a class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;" href="/coin/@c.id">
                     <div class="columns is-gapless is-mobile is-vcentered pr-4">
                         <div class="column">
                             <img alt="@c.id logo" src="@c.image" style="height: 46px; width: 46px; vertical-align: middle" />
@@ -38,7 +38,7 @@
                         <div class="column has-text-centered">placeholder</div>
                         <div class="column has-text-right">@c.symbol.ToUpper()</div>
                     </div>
-                </div>
+                </a>
             }
         }
     </div>

@@ -1,0 +1,71 @@
+﻿@using System.Net.Http
+@inject HttpClient Http
+
+<div class="box mb-5 py-3" style="background: linear-gradient(to top right, #323232, #4b4b4b)">
+    @if (response != null)
+    {
+        <div class="columns is-gapless is-mobile">
+            <div class="column">
+                <strong>Market Cap</strong>
+                <div>@formatLrgNum(response.data.total_market_cap.usd)</div>
+            </div>
+            <div class="column has-text-centered">
+                <strong>24HR Vol</strong>
+                <div>@formatLrgNum(response.data.total_volume.usd)</div>
+            </div>
+            <div class="column has-text-right">
+                <strong>BTC Dominance</strong>
+                <div>@response.data.market_cap_percentage.btc.ToString("N2") %</div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private string COINGECKO_MARKET = "https://api.coingecko.com/api/v3/global";
+    public MarketResponse response;
+
+    protected override async Task OnInitializedAsync()
+    {
+        response = await Http.GetFromJsonAsync<MarketResponse>(COINGECKO_MARKET);
+    }
+
+    public string formatLrgNum(double n)
+    {
+        if (n < 1e3) return n.ToString();
+        if (n >= 1e3 && n < 1e6) return (n / 1e3).ToString("N1") + " K";
+        if (n >= 1e6 && n < 1e9) return (n / 1e6).ToString("N1") + " M";
+        if (n >= 1e9 && n < 1e12) return (n / 1e9).ToString("N1") + " B";
+        if (n >= 1e12 && n < 1e15) return (n / 1e12).ToString("N1") + " T";
+        else return "0";
+    }
+
+    public class TotalMarketCap
+    {
+        public double usd { get; set; }
+    }
+
+    public class TotalVolume
+    {
+        public double usd { get; set; }
+    }
+
+    public class MarketCapPercentage
+    {
+        public double btc { get; set; }
+        public double eth { get; set; }
+    }
+
+    public class Data
+    {
+        public TotalMarketCap total_market_cap { get; set; }
+        public TotalVolume total_volume { get; set; }
+        public MarketCapPercentage market_cap_percentage { get; set; }
+        public double market_cap_change_percentage_24h_usd { get; set; }
+    }
+
+    public class MarketResponse
+    {
+        public Data data { get; set; }
+    }
+}

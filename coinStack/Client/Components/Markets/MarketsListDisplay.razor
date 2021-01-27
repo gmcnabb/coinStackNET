@@ -1,0 +1,77 @@
+﻿@using System.Net.Http
+@using Sve.Blazor.InfiniteScroll.Components
+@inject HttpClient Http
+
+<div style="height: 500px; overflow-y: auto">
+    <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReached="(e) => FetchCoins()">
+        <ul>
+            @foreach (MarketCoin c in coinList)
+            {
+                <li>
+                    <div class="columns is-gapless mb-0">
+                        <a class="button is-info is-outlined is-rounded is-fullwidth mb-0" href="coin/@c.id">
+                            <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
+                                <img alt="@c.id logo" src="@c.image" style="height: 36px; width: 36px; vertical-align: middle" />
+                                &nbsp;@c.name&ensp;@c.symbol.ToUpper()
+                            </div>
+                            <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
+                                $ @c.current_price
+                            </div>
+                            <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
+                                $ @formatLrgNum(c.market_cap)
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            }
+        </ul>
+        <li id="observerTarget">Loading...</li>
+    </InfiniteScroll>
+</div>
+
+@code {
+    private string COINGECKO_COINS = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100";
+    private List<MarketCoin> coinList = new List<MarketCoin>();
+    private DateTime lastFetch = DateTime.Now;
+    private bool firstFetch = true;
+    private int pagesFetched = 0;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await FetchCoins();
+    }
+
+    public async Task FetchCoins()
+    {
+        if (DateTime.Now - lastFetch > new TimeSpan(0, 0, 1) || firstFetch == true)
+        {
+            int pageNum = pagesFetched;
+            pagesFetched++;
+            List<MarketCoin> fetchedCoins = await Http.GetFromJsonAsync<List<MarketCoin>>
+                ($"{COINGECKO_COINS}&page={pageNum}&sparkline=false");
+            coinList.AddRange(fetchedCoins);
+            lastFetch = DateTime.Now;
+            firstFetch = false;
+        }
+    }
+
+    public string formatLrgNum(double n)
+    {
+        if (n < 1e3) return n.ToString();
+        if (n >= 1e3 && n < 1e6) return (n / 1e3).ToString("N1") + " K";
+        if (n >= 1e6 && n < 1e9) return (n / 1e6).ToString("N1") + " M";
+        if (n >= 1e9 && n < 1e12) return (n / 1e9).ToString("N1") + " B";
+        if (n >= 1e12 && n < 1e15) return (n / 1e12).ToString("N1") + " T";
+        else return "0";
+    }
+
+    public class MarketCoin
+    {
+        public string id { get; set; }
+        public string symbol { get; set; }
+        public string name { get; set; }
+        public string image { get; set; }
+        public double current_price { get; set; }
+        public long market_cap { get; set; }
+    }
+}
