@@ -66,17 +66,15 @@
         var exists = await CoinService.CheckForCoin(c.id);
         if (!exists)
         {
-            var addCoinResult = await CoinService.AddCoin(c);
-            if (addCoinResult.Success)
+            bool addCoinResult = await CoinService.AddCoin(c);
+            if (addCoinResult)
             {
-                var buildPortfolioCoinResult = await CoinService.AddPortfolioCoin(c.id);
-                if (!buildPortfolioCoinResult.Success) { Console.WriteLine(buildPortfolioCoinResult.Message); }
+                await CoinService.AddPortfolioCoin(c);
             }
         }
         else
         {
-            var buildPortfolioCoinResult = await CoinService.AddPortfolioCoin(c.id);
-            if (!buildPortfolioCoinResult.Success) { Console.WriteLine(buildPortfolioCoinResult.Message); }
+            await CoinService.AddPortfolioCoin(c);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using coinStack.Shared;
+﻿using Blazored.Toast.Services;
+using coinStack.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,11 @@ namespace coinStack.Client.Services
     public class PortfolioService : IPortfolioService
     {
         private readonly HttpClient _http;
-        public PortfolioService(HttpClient http)
+        private readonly IToastService _toastService;
+        public PortfolioService(HttpClient http, IToastService toastService)
         {
             _http = http;
+            _toastService = toastService;
         }
 
         public event Action OnChange;
@@ -28,10 +31,30 @@ namespace coinStack.Client.Services
             var result = await _http.PostAsJsonAsync<UserPortfolio>("api/userportfolio/updateportfolio", portfolio);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<UserPortfolio>>();
         }
-        public async Task<ServiceResponse<UserPortfolio>> AddPortfolio(UserPortfolio portfolio)
+        public async Task AddPortfolio(UserPortfolio portfolio)
         {
             var result = await _http.PostAsJsonAsync<UserPortfolio>("api/userportfolio/addportfolio", portfolio);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<UserPortfolio>>();
+            if (result.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                _toastService.ShowError(await result.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                _toastService.ShowSuccess($"{portfolio.Name} was added to your account!", "Portfolio added!");
+            }
+        }
+
+        public async Task DeletePortfolio(UserPortfolio portfolio)
+        {
+            var result = await _http.PostAsJsonAsync<UserPortfolio>("api/userportfolio/deleteportfolio", portfolio);
+            if (result.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                _toastService.ShowError(await result.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                _toastService.ShowSuccess($"{portfolio.Name} has been deleted.", "Portfolio deleted");
+            }
         }
 
         void PortfoliosChanged() => OnChange.Invoke();

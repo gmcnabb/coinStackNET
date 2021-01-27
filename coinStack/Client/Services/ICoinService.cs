@@ -12,9 +12,9 @@ namespace coinStack.Client.Services
         IList<Coin> Coins { get; set; }
         IList<PortfolioCoin> PortfolioCoins { get; set; }
         Task<bool> CheckForCoin(string coinId);
-        Task<ServiceResponse<Coin>> AddCoin(Coin coin);
+        Task<bool> AddCoin(Coin coin);
         Task LoadCoinsAsync();
         Task LoadPortfolioCoinsAsync();
-        Task<ServiceResponse<PortfolioCoin>> AddPortfolioCoin(string coinId);
+        Task AddPortfolioCoin(Coin c);
     }
 }

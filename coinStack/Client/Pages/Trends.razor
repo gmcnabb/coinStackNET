@@ -18,13 +18,13 @@
          style="border-color: #4b4b4b; border-radius: 5px; border-style: solid; border-width: 1px">
         <div class="columns is-gapless is-mobile">
             <div class="column">
-                <strong>&nbsp;Logo</strong>
+                <strong>&nbsp;Name</strong>
             </div>
             <div class="column has-text-centered">
-                <strong>Name&emsp;</strong>
+                <strong>Ticker&emsp;</strong>
             </div>
             <div class="column has-text-right">
-                <strong>Ticker</strong>
+                <strong>Ranking</strong>
             </div>
         </div>
     </div>
@@ -34,12 +34,12 @@
         {
             <div class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;">
                 <div class="columns is-gapless is-mobile is-vcentered pr-4">
-                    <div class="column">
+                    <div class="column has-text-left">
                         <img alt="@c.item.id logo" src="@c.item.large" style="height: 46px; width: 46px; vertical-align: middle" />
-                        &emsp;# @(c.item.score + 1)
+                        &emsp;@c.item.name
                     </div>
-                    <div class="column has-text-centered">@c.item.name</div>
-                    <div class="column has-text-right">@c.item.symbol</div>
+                    <div class="column has-text-centered">@c.item.symbol</div>
+                    <div class="column has-text-right"># @(c.item.score + 1)</div>
                 </div>
             </div>
         }

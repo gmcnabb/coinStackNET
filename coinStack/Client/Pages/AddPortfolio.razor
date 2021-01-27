@@ -43,11 +43,7 @@
 
     private async void SavePortfolio()
     {
-        var result = await PortfolioService.AddPortfolio(portfolio);
-        if (!result.Success)
-        {
-            Console.WriteLine(result.Message);
-        }
+        await PortfolioService.AddPortfolio(portfolio);
         NavigationManager.NavigateTo("/settings");
     }
 }

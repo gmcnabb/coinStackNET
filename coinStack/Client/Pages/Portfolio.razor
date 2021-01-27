@@ -21,9 +21,9 @@
         </div>
     </div>
     <div>
-        @if (CoinService.Coins == null)
+        @if (CoinService.Coins.Count == 0)
         {
-            <div>loading...</div>
+            <div>loading...  select a portfolio (or create a new one) on the settings page</div>
         }
         else
         {

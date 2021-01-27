@@ -26,15 +26,15 @@ namespace coinStack.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> BuildPortfolioCoin([FromBody] string coinId)
+        public async Task<IActionResult> BuildPortfolioCoin([FromBody] Coin c)
         {
-            var coin = _context.Coins.Find(coinId);
+            var coin = _context.Coins.Find(c.id);
             var user = await _utilityService.GetUser();
             var portfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.UserId == user.Id && u.CurrentlySelected == true);
 
             if (await _context.PortfolioCoins.AnyAsync<PortfolioCoin>(p => p.UserPortfolioId == portfolio.Id && p.Coinid == coin.id))
             {
-                return BadRequest("The provided coin is already associated with this portfolio.");
+                return BadRequest("That coin is already associated with this portfolio.");
             }
 
             PortfolioCoin newPortfolioCoin = new PortfolioCoin

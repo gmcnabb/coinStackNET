@@ -1,4 +1,5 @@
-﻿using coinStack.Shared;
+﻿using Blazored.Toast.Services;
+using coinStack.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,11 @@ namespace coinStack.Client.Services
     {
         public event Action OnChange;
         private readonly HttpClient _http;
-        public CoinService(HttpClient http)
+        private readonly IToastService _toastService;
+        public CoinService(HttpClient http, IToastService toastService)
         {
             _http = http;
+            _toastService = toastService;
         }
 
         public IList<Coin> Coins { get; set; } = new List<Coin>();
@@ -27,10 +30,14 @@ namespace coinStack.Client.Services
             return result;
         }
 
-        public async Task<ServiceResponse<Coin>> AddCoin(Coin coin)
+        public async Task<bool> AddCoin(Coin coin)
         {
             var result = await _http.PostAsJsonAsync<Coin>("api/coin/addcoin", coin);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<Coin>>();
+            if (result.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return false;
+            }
+            return true;
         }
 
 
@@ -53,10 +60,17 @@ namespace coinStack.Client.Services
             PortfolioCoins = await _http.GetFromJsonAsync<IList<PortfolioCoin>>("api/portfoliocoin");
         }
 
-        public async Task<ServiceResponse<PortfolioCoin>> AddPortfolioCoin(string coinId)
+        public async Task AddPortfolioCoin(Coin c)
         {
-            var result = await _http.PostAsJsonAsync<string>("api/portfoliocoin", coinId);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<PortfolioCoin>>();
+            var result = await _http.PostAsJsonAsync<Coin>("api/portfoliocoin", c);
+            if (result.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                _toastService.ShowError(await result.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                _toastService.ShowSuccess($"{c.name} was added to your portfolio!", "Coin added!");
+            }
         }
     }
 }

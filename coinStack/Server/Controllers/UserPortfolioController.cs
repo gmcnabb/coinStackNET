@@ -70,5 +70,20 @@ namespace coinStack.Server.Controllers
             await _context.SaveChangesAsync();
             return Ok(portfolio);
         }
+
+        [HttpPost("DeletePortfolio")]
+        public async Task<IActionResult> DeletePortfolio([FromBody] UserPortfolio portfolio)
+        {
+            var user = await _utilityService.GetUser();
+
+            if (user.Id != portfolio.UserId)
+            {
+                return BadRequest("User does not own this portfolio");
+            }
+
+            _context.Remove(portfolio);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }

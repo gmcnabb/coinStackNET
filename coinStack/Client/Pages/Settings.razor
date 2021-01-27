@@ -1,5 +1,6 @@
 ﻿@page "/settings"
 @inject coinStack.Client.Services.IPortfolioService PortfolioService
+@inject IToastService ToastService
 
 <div class="container is-max-desktop">
     <AuthorizeView>
@@ -68,6 +69,10 @@
                 </EditForm>
                 <br />
                 <div class="box has-text-right">
+                    <button class="button is-primary is-outlined" @onclick="DeletePortfolio">
+                        Delete Portfolio
+                    </button>
+                    &emsp;
                     <a class="button is-primary is-outlined" href="/addportfolio">
                         Add a new Portfolio &ensp;
                         <svg aria-hidden="true" focusable="false" data-prefix="fas"
@@ -93,6 +98,7 @@
     private bool collapsePortfolioDropdown = true;
     private string PortfolioDropdownActive => collapsePortfolioDropdown ? "is-shadowless" : "is-shadowless is-active";
     UserPortfolio portfolio = new UserPortfolio();
+    private int warning = 0;
 
 
     protected override async Task OnInitializedAsync()
@@ -118,5 +124,20 @@
             Console.WriteLine(result.Message);
         }
         await PortfolioService.GetPortfolios();
+    }
+
+    private async void DeletePortfolio()
+    {
+        if (warning == 0)
+        {
+            ToastService.ShowWarning("You are about to permanently delete this portfolio! Click delete again to confirm.");
+            warning = 1;
+        }
+        else
+        {
+            await PortfolioService.DeletePortfolio(portfolio);
+            warning = 0;
+            await PortfolioService.GetPortfolios();
+        }
     }
 }
