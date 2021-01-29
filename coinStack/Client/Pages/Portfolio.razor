@@ -47,7 +47,6 @@
 @code{
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("oninit");
         await CoinService.LoadPortfolioCoinsAsync();
         await CoinService.LoadCoinsAsync();
     }

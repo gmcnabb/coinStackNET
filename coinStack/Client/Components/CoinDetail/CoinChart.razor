@@ -1,0 +1,83 @@
+﻿@using Plotly.Blazor
+@using Plotly.Blazor.Traces
+@using Plotly.Blazor.LayoutLib
+@using Plotly.Blazor.LayoutLib.XAxisLib
+@using Plotly.Blazor.Traces.CandlestickLib
+@using Line = Plotly.Blazor.Traces.CandlestickLib.DecreasingLib.Line
+
+<PlotlyChart Id="TestId" Config="config" Layout="layout" Data="data" @ref="chart" />
+
+@code {
+    [Parameter]
+    public string coinToChart { get; set; }
+    [Parameter]
+    public List<object> chartDates { get; set; }
+    [Parameter]
+    public List<object> chartOpen { get; set; }
+    [Parameter]
+    public List<object> chartHigh { get; set; }
+    [Parameter]
+    public List<object> chartLow { get; set; }
+    [Parameter]
+    public List<object> chartClose { get; set; }
+
+    PlotlyChart chart = new PlotlyChart();
+    Config config = new Config();
+    Layout layout = new Layout();
+    List<ITrace> data = new List<ITrace>();
+
+    protected override void OnInitialized()
+    {
+        config.Responsive = true;
+        layout.PaperBgColor = "#272727";
+        layout.PlotBgColor = "#272727";
+        layout.Font = new Font { Color = "#fff" };
+        layout.Title = new Plotly.Blazor.LayoutLib.Title { Text = $"{coinToChart} price chart" };
+        layout.XAxis = new List<XAxis> {
+             new XAxis {
+                AutoRange = AutoRangeEnum.True,
+                Domain = new List<object> {0, 1},
+                Range = new List<object> { chartDates.First(), chartDates.Last() },
+                RangeSlider = new RangeSlider { Range = new object[] { chartDates.First().ToString(), chartDates.First().ToString()} },
+                Title = new Plotly.Blazor.LayoutLib.XAxisLib.Title {Text = "Date"},
+                Type = TypeEnum.Date,
+                Color = "#fff"
+             } };
+        layout.YAxis = new List<YAxis> {
+            new YAxis {
+                AutoRange = Plotly.Blazor.LayoutLib.YAxisLib.AutoRangeEnum.True,
+                Domain = new List<object> {0,1},
+                Range = new List<object> {chartLow.Min(), chartHigh.Max()},
+                Type = Plotly.Blazor.LayoutLib.YAxisLib.TypeEnum.Linear,
+                Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title {Text = "USD Price"},
+                Color = "#fff"
+            } };
+        layout.Height = 500;
+        data.Add(
+                        new Candlestick
+                        {
+                            X = new List<object>(chartDates),
+                            Close = new List<object>(chartClose),
+                            Decreasing = new Decreasing
+                            {
+                                Line = new Line
+                                {
+                                    Color = "red"
+                                }
+                            },
+                            High = new List<object>(chartHigh),
+                            Increasing = new Increasing
+                            {
+                                Line = new Plotly.Blazor.Traces.CandlestickLib.IncreasingLib.Line
+                                {
+                                    Color = "green"
+                                }
+                            },
+                            Low = new List<object>(chartLow),
+                            Open = new List<object>(chartOpen),
+                            XAxis = "x",
+                            YAxis = "y"
+                        }
+                    );
+    }
+}

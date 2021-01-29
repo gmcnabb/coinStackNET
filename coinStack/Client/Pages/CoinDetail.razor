@@ -1,10 +1,56 @@
 ﻿@page "/coin/{coinId}"
+@using System.Net.Http
+@inject HttpClient Http
 
-<div class="container is-max-desktop">
-    @coinId
+<div class="container is-max-desktop" id="chartContainer">
+    @if (Close.Count != 0)
+    {
+        <CoinChart coinToChart="@coinId" chartDates="@Dates" chartOpen="@Open" chartHigh="@High" chartLow="@Low" chartClose="@Close" />
+    }
+    else
+    { <p>loading price chart...</p>}
+    <h4 className="title is-4 has-text-centered">
+        @coinId Holdings
+    </h4>
 </div>
 
 @code {
     [Parameter]
     public string coinId { get; set; }
+
+    private static string timeframe = "365";
+    private double[][] deserialized;
+    private static List<object> Dates = new List<object>();
+    private static List<object> Open = new List<object>();
+    private static List<object> High = new List<object>();
+    private static List<object> Low = new List<object>();
+    private static List<object> Close = new List<object>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCandlestickData();
+        ProcessData(deserialized);
+    }
+
+    public async Task GetCandlestickData()
+    {
+        try
+        {
+            string response = await Http.GetStringAsync($"https://api.coingecko.com/api/v3/coins/{coinId}/ohlc?vs_currency=usd&days={timeframe}");
+            deserialized = System.Text.Json.JsonSerializer.Deserialize<double[][]>(response);
+        }
+        catch (Exception e) { Console.WriteLine(e); }
+    }
+
+    public void ProcessData(double[][] d)
+    {
+        for (int i = 0; i < d.Length; i++)
+        {
+            Dates.Add(d[i][0]);
+            Open.Add(d[i][1]);
+            High.Add(d[i][2]);
+            Low.Add(d[i][3]);
+            Close.Add(d[i][4]);
+        }
+    }
 }
