@@ -72,5 +72,18 @@ namespace coinStack.Client.Services
                 _toastService.ShowSuccess($"{c.name} was added to your portfolio!", "Coin added!");
             }
         }
+
+        public async Task RemovePortfolioCoin(string coinId)
+        {
+            var result = await _http.PostAsJsonAsync<string>("api/portfoliocoin/remove", coinId);
+            if (result.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                _toastService.ShowError(await result.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                _toastService.ShowSuccess($"{coinId} was removed from your portfolio.", "Coin removed.");
+            }
+        }
     }
 }

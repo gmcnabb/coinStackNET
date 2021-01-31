@@ -1,6 +1,7 @@
 ﻿@page "/coin/{coinId}"
 @using System.Net.Http
 @inject HttpClient Http
+@inject coinStack.Client.Services.ICoinService CoinService
 
 <div class="container is-max-desktop" id="chartContainer">
     @if (Close.Count != 0)
@@ -12,6 +13,14 @@
     <h4 className="title is-4 has-text-centered">
         @coinId Holdings
     </h4>
+    <div class="box mt-4 mb-2 py-0 is-transparent has-text-centered">
+        <div class="button is-primary is-outlined" @onclick="UnwatchCoin">
+            Unwatch Coin
+        </div>&emsp;
+        <a class="button is-primary is-outlined" href="/edit/@coinId">
+            Edit Transactions
+        </a>
+    </div>
 </div>
 
 @code {
@@ -52,5 +61,10 @@
             Low.Add(d[i][3]);
             Close.Add(d[i][4]);
         }
+    }
+
+    public async Task UnwatchCoin()
+    {
+        await CoinService.RemovePortfolioCoin(coinId);
     }
 }

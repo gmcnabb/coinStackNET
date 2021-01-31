@@ -63,5 +63,23 @@ namespace coinStack.Server.Controllers
             return Ok(portfolioCoins);
         }
 
+        [HttpPost("Remove")]
+        public async Task<IActionResult> RemovePortfolioCoin([FromBody] string coinId)
+        {
+            var coin = _context.Coins.Find(coinId);
+            var user = await _utilityService.GetUser();
+            var portfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.UserId == user.Id && u.CurrentlySelected == true);
+
+            var portfolioCoin = await _context.PortfolioCoins.FirstOrDefaultAsync<PortfolioCoin>(p => p.UserPortfolioId == portfolio.Id && p.Coinid == coin.id);
+            if (portfolioCoin == null)
+            {
+                return BadRequest($"{coin.name} not found in user's currently selected portfolio.");
+            }
+
+            _context.PortfolioCoins.Remove(portfolioCoin);
+            await _context.SaveChangesAsync();
+            return Ok(portfolioCoin);
+        }
+
     }
 }

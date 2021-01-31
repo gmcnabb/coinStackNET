@@ -16,5 +16,6 @@ namespace coinStack.Client.Services
         Task LoadCoinsAsync();
         Task LoadPortfolioCoinsAsync();
         Task AddPortfolioCoin(Coin c);
+        Task RemovePortfolioCoin(string coinId);
     }
 }
