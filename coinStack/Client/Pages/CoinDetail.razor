@@ -13,14 +13,21 @@
     <h4 className="title is-4 has-text-centered">
         @coinId Holdings
     </h4>
-    <div class="box mt-4 mb-2 py-0 is-transparent has-text-centered">
-        <div class="button is-primary is-outlined" @onclick="UnwatchCoin">
-            Unwatch Coin
-        </div>&emsp;
-        <a class="button is-primary is-outlined" href="/edit/@coinId">
-            Edit Transactions
-        </a>
-    </div>
+    <AuthorizeView>
+        <Authorized Context="context">
+            <div class="box mt-4 mb-2 py-0 is-transparent has-text-centered">
+                <div class="button is-primary is-outlined" @onclick="UnwatchCoin">
+                    Unwatch Coin
+                </div>&emsp;
+                <a class="button is-primary is-outlined" href="/edit/@coinId">
+                    Edit Transactions
+                </a>
+            </div>
+        </Authorized>
+        <NotAuthorized Context="other">
+            <h6 class="title is-6">Please log in below or <NavLink href="register">register</NavLink> a new account.</h6>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
 
 @code {

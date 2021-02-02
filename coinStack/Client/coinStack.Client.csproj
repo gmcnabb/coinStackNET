@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Index\" />
     <Folder Include="Components\EditTransactions\" />
   </ItemGroup>
 

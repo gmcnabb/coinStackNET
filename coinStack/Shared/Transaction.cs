@@ -17,9 +17,9 @@ namespace coinStack.Shared
         [Required]
         public string Coinid { get; set; }
         [Required]
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
         [Required]
-        public int USDValue { get; set; }
+        public double USDValue { get; set; }
         [Required]
         public DateTime DateCreated { get; set; }
         public Coin Coin { get; set; }

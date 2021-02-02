@@ -31,7 +31,7 @@ namespace coinStack.Client
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
             builder.Services.AddScoped<ICoinService, CoinService>();
             builder.Services.AddScoped<IPortfolioService, PortfolioService>();
-
+            builder.Services.AddScoped<ITransactionService, TransactionService>();
 
             await builder.Build().RunAsync();
         }

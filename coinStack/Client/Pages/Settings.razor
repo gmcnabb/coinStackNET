@@ -30,7 +30,7 @@
                             {
                                 @foreach (UserPortfolio p in PortfolioService.Portfolios)
                                 {
-                                    <button href="#" class="dropdown-item" @onclick="() => ChoosePortfolio(p)">
+                                    <button href="#" class="dropdown-item" style="background-color: #272727" @onclick="() => ChoosePortfolio(p)">
                                         @p.Name @if (p.CurrentlySelected)
                                         {<span>*</span>}
                                     </button>
