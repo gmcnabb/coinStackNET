@@ -1,0 +1,37 @@
+﻿@inject coinStack.Client.Services.ITransactionService TransactionService
+
+<div class="box mt-2 mb-2 has-background-grey-darker">
+    <div class="columns is-mobile is-multiline is-centered is-vcentered">
+        <div class="column is-narrow">
+            date: @transaction.DateCreated.ToShortDateString()
+        </div>
+        <div class="column is-narrow">
+            price: $@transaction.USDValue.ToString("#,##0.##")
+        </div>
+        <div class="column is-narrow">
+            quantity: @transaction.Quantity.ToString("#,##0.##")
+        </div>
+        <div class="column is-narrow">
+            <button class="button is-primary is-outlined p-3" @onclick="DeleteTransaction">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     version="1.1"
+                     width="18"
+                     height="18"
+                     viewBox="0 0 24 24">
+                    <path fill="#fb9215"
+                          d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Transaction transaction { get; set; }
+
+    public async Task DeleteTransaction()
+    {
+        await TransactionService.DeleteTransaction(transaction);
+    }
+}

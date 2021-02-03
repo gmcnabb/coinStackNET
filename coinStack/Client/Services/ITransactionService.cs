@@ -8,6 +8,12 @@ namespace coinStack.Client.Services
 {
     public interface ITransactionService
     {
+        event Action OnChange;
+        IList<Transaction> Transactions { get; set; }
+        IList<PortfolioTransaction> PortfolioTransactions { get; set; }
         Task AddPortfolioTransaction(Transaction transaction);
+        Task LoadPortfolioTransactions();
+        Task LoadTransactions();
+        Task DeleteTransaction(Transaction t);
     }
 }

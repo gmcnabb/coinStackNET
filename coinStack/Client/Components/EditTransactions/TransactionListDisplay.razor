@@ -1,0 +1,52 @@
+﻿@inject coinStack.Client.Services.ITransactionService TransactionService
+
+@if (CoinBuys.Count == 0)
+{
+    <div>No buy transactions found for this coin in currently selected portfolio.</div>
+}
+else
+{
+    <div>previous buys:</div>
+    foreach (Transaction t in CoinBuys)
+    {
+        <TransactionListItem transaction="t" />
+    }
+}
+@if (CoinSells.Count == 0)
+{
+    <div>No sell transactions found for this coin in currently selected portfolio.</div>
+}
+else
+{
+    <div>previous sells:</div>
+    foreach (Transaction t in CoinSells)
+    {
+        <TransactionListItem transaction="t" />
+    }
+}
+
+@code {
+    [Parameter]
+    public string coinId { get; set; }
+    private List<Transaction> CoinBuys { get; set; } = new List<Transaction>();
+    private List<Transaction> CoinSells { get; set; } = new List<Transaction>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await TransactionService.LoadPortfolioTransactions();
+        await TransactionService.LoadTransactions();
+        foreach (Transaction t in TransactionService.Transactions)
+        {
+            if (t.Coinid == coinId && t.Type == true)
+            {
+                CoinBuys.Add(t);
+            }
+            if (t.Coinid == coinId && t.Type == false)
+            {
+                CoinSells.Add(t);
+            }
+        }
+        CoinBuys.Sort((x, y) => x.DateCreated.CompareTo(y.DateCreated));
+        CoinSells.Sort((x, y) => y.DateCreated.CompareTo(y.DateCreated));
+    }
+}

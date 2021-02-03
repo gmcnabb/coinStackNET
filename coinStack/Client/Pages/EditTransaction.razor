@@ -1,5 +1,6 @@
 ﻿@page "/edit/{coinId}"
-@inject coinStack.Client.Services.ITransactionService TransactionService
+@using coinStack.Client.Services
+@inject ITransactionService TransactionService
 
 <div class="container is-max-desktop">
     <h4 class="title is-4 has-text-centered">
@@ -7,7 +8,11 @@
     </h4>
     <AuthorizeView>
         <Authorized Context="context">
+            <div class="box has-text-centered" style="height: 250px; overflow-y: scroll">
+                <TransactionListDisplay coinId="@coinId" />
+            </div>
             <div class="box has-text-centered">
+                <strong>Create a new transaction:</strong><br /><br />
                 <div class="columns is-mobile">
                     <div class="column has-text-right pt-4">
                         Transaction Type:

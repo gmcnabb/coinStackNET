@@ -53,5 +53,19 @@ namespace coinStack.Server.Controllers
 
             return Ok(portfolioTransaction);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadPortfolioTransactions()
+        {
+            var user = await _utilityService.GetUser();
+            var portfolio = await _context.UserPortfolios.FirstOrDefaultAsync<UserPortfolio>(u => u.UserId == user.Id && u.CurrentlySelected == true);
+
+            var portfolioTransactions = await _context.PortfolioTransactions.Where(p => p.UserPortfolioId == portfolio.Id).ToListAsync();
+            if (portfolioTransactions == null)
+            {
+                return BadRequest("No transactions found for currently selected portfolio.");
+            }
+            return Ok(portfolioTransactions);
+        }
     }
 }
