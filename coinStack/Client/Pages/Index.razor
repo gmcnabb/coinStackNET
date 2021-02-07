@@ -1,6 +1,8 @@
 ﻿@page "/"
 @layout Client.Shared.IndexLayout
-
+@inject AuthenticationStateProvider CustomAuthStateProvider
+@inject coinStack.Client.Services.PortfolioDataService PortfolioDataService
+@implements IDisposable
 
 <div class="container is-max-desktop">
     <div class="has-text-centered">
@@ -12,7 +14,40 @@
     <div class="box has-text-centered is-shadowless is-vcentered mb-0" style="background:transparent">
         <h6 class="title is-6 mb-3">coinStack is a live portfolio tracker for your crypto assets.</h6>
     </div>
+    <div class="box has-text-centered is-shadowless p-0" style="background:transparent;">
+        <img src="img/coinStack4x3.png" alt="coinStack homepage" />
+    </div>
+    <div class="pb-4 has-text-right">
+        <br />
+        <br />
+        <hr style="border: 1px solid #209cee; margin-left: 0; margin-left: 0" />
+        Powered by CoinGecko API
+    </div>
 </div>
-<div class="box has-text-centered is-shadowless p-0" style="background:transparent;">
-    <img src="img/coinStack4x3.png" alt="coinStack homepage" />
-</div>
+
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        PortfolioDataService.OnChange += StateHasChanged;
+
+        if (PortfolioDataService.finishedCalculations) { return; }
+        var result = await CustomAuthStateProvider.GetAuthenticationStateAsync();
+        if (!result.User.Identity.IsAuthenticated) { return; }
+        if (PortfolioDataService.Coins.Count == 0)
+        {
+            await PortfolioDataService.LoadPortfolioCoins();
+            await PortfolioDataService.LoadCoins();
+        }
+        if (PortfolioDataService.Coins.Count == 0) { return; }
+        await PortfolioDataService.GetPortfolioMarketData();
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+        PortfolioDataService.CalculateAllCoinStats();
+    }
+
+    public void Dispose()
+    {
+        PortfolioDataService.OnChange -= StateHasChanged;
+    }
+}

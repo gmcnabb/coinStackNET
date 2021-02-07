@@ -1,4 +1,5 @@
 ﻿@inject coinStack.Client.Services.ITransactionService TransactionService
+@inject coinStack.Client.Services.PortfolioDataService PortfolioDataService
 
 @if (CoinBuys.Count == 0)
 {
@@ -9,7 +10,7 @@ else
     <div>previous buys:</div>
     foreach (Transaction t in CoinBuys)
     {
-        <TransactionListItem transaction="t" />
+        <TransactionListItem transaction="t" deleteTransaction="DeleteTransaction" />
     }
 }
 @if (CoinSells.Count == 0)
@@ -21,21 +22,35 @@ else
     <div>previous sells:</div>
     foreach (Transaction t in CoinSells)
     {
-        <TransactionListItem transaction="t" />
+        <TransactionListItem transaction="t" deleteTransaction="DeleteTransaction" />
     }
 }
 
 @code {
     [Parameter]
     public string coinId { get; set; }
+    [Parameter]
+    public string reloader { get; set; }
+
     private List<Transaction> CoinBuys { get; set; } = new List<Transaction>();
     private List<Transaction> CoinSells { get; set; } = new List<Transaction>();
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        await TransactionService.LoadPortfolioTransactions();
-        await TransactionService.LoadTransactions();
-        foreach (Transaction t in TransactionService.Transactions)
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+    }
+
+    protected override void OnParametersSet()
+    {
+        OrganizeTransactions();
+    }
+
+    public void OrganizeTransactions()
+    {
+        CoinBuys.Clear();
+        CoinSells.Clear();
+        foreach (Transaction t in PortfolioDataService.Transactions)
         {
             if (t.Coinid == coinId && t.Type == true)
             {
@@ -48,5 +63,16 @@ else
         }
         CoinBuys.Sort((x, y) => x.DateCreated.CompareTo(y.DateCreated));
         CoinSells.Sort((x, y) => y.DateCreated.CompareTo(y.DateCreated));
+    }
+
+    public async Task DeleteTransaction(Transaction transaction)
+    {
+        await TransactionService.DeleteTransaction(transaction);
+        CoinBuys.Remove(transaction);
+        CoinSells.Remove(transaction);
+        await PortfolioDataService.GetPortfolioMarketData();
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+        PortfolioDataService.CalculateAllCoinStats();
     }
 }

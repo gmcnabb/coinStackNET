@@ -1,14 +1,39 @@
-﻿<div class="box py-4 has-text-white" style="background: linear-gradient( to top right, #1b57a2, #52c4ff)">
+﻿@inject coinStack.Client.Services.PortfolioDataService PortfolioDataService
+@implements IDisposable
+
+<div class="box py-4 has-text-white" style="background: linear-gradient( to top right, #1b57a2, #52c4ff)">
     <div class="columns is-gapless is-mobile">
         <div class="column has-text-left">
-            Portfolio Value:
+            Portfolio Value: $ @formatLrgNum(PortfolioDataService.TotalValue)
             <span style="white-space: nowrap">
             </span>
         </div>
         <div class="column has-text-right">
-            Profit/Loss:
+            Profit/Loss: $ @formatLrgNum(PortfolioDataService.TotalPnL)
             <span style="white-space: nowrap">
             </span>
         </div>
     </div>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        PortfolioDataService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        PortfolioDataService.OnChange -= StateHasChanged;
+    }
+
+    public string formatLrgNum(double n)
+    {
+        if (n < 1e3) return n.ToString("#,##0.##");
+        if (n >= 1e3 && n < 1e6) return (n / 1e3).ToString("N2") + " K";
+        if (n >= 1e6 && n < 1e9) return (n / 1e6).ToString("N2") + " M";
+        if (n >= 1e9 && n < 1e12) return (n / 1e9).ToString("N2") + " B";
+        if (n >= 1e12 && n < 1e15) return (n / 1e12).ToString("N2") + " T";
+        else return "0";
+    }
+}

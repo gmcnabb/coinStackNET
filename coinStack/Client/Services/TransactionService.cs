@@ -19,10 +19,6 @@ namespace coinStack.Client.Services
             _toastService = toastService;
         }
 
-        public event Action OnChange;
-        public IList<Transaction> Transactions { get; set; } = new List<Transaction>();
-        public IList<PortfolioTransaction> PortfolioTransactions { get; set; } = new List<PortfolioTransaction>();
-
         public async Task AddPortfolioTransaction(Transaction transaction)
         {
             var result = await _http.PostAsJsonAsync<Transaction>("api/portfoliotransaction/", transaction);
@@ -33,24 +29,6 @@ namespace coinStack.Client.Services
             else
             {
                 _toastService.ShowSuccess("The transaction was added to your account!", "Transaction added!");
-            }
-        }
-
-        public async Task LoadPortfolioTransactions()
-        {
-            PortfolioTransactions.Clear();
-            PortfolioTransactions = await _http.GetFromJsonAsync<IList<PortfolioTransaction>>("api/portfoliotransaction");
-        }
-
-        public async Task LoadTransactions()
-        {
-            if (Transactions.Count != PortfolioTransactions.Count)
-            {
-                foreach (PortfolioTransaction p in PortfolioTransactions)
-                {
-                    var transaction = await _http.GetFromJsonAsync<Transaction>($"api/transaction/{p.Id}");
-                    Transactions.Add(transaction);
-                }
             }
         }
 
@@ -66,7 +44,5 @@ namespace coinStack.Client.Services
                 _toastService.ShowSuccess("The transaction was deleted from your portfolio", "Transaction deleted");
             }
         }
-
-        void TransactionsChanged() => OnChange.Invoke();
     }
 }

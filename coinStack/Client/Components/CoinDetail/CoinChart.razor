@@ -32,7 +32,7 @@
         layout.PaperBgColor = "#272727";
         layout.PlotBgColor = "#272727";
         layout.Font = new Font { Color = "#fff" };
-        layout.Title = new Plotly.Blazor.LayoutLib.Title { Text = $"{coinToChart} price chart" };
+        layout.Title = new Plotly.Blazor.LayoutLib.Title { Text = $"{coinToChart} price chart", Font = new Plotly.Blazor.LayoutLib.TitleLib.Font { Family = "Ubuntu Mono", Size = 20 } };
         layout.XAxis = new List<XAxis> {
              new XAxis {
                 AutoRange = AutoRangeEnum.True,

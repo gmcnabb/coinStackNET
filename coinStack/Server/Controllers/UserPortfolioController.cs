@@ -81,6 +81,11 @@ namespace coinStack.Server.Controllers
                 return BadRequest("User does not own this portfolio");
             }
 
+            if (portfolio.CurrentlySelected)
+            {
+                return BadRequest("Deselect portfolio before deleting");
+            }
+
             _context.Remove(portfolio);
             await _context.SaveChangesAsync();
             return Ok();

@@ -2,6 +2,9 @@
 @using System.Net.Http
 @inject HttpClient Http
 @inject coinStack.Client.Services.ICoinService CoinService
+@inject coinStack.Client.Services.PortfolioDataService PortfolioDataService
+@inject AuthenticationStateProvider CustomAuthStateProvider
+@implements IDisposable
 
 <div class="container is-max-desktop" id="chartContainer">
     @if (Close.Count != 0)
@@ -10,24 +13,55 @@
     }
     else
     { <p>loading price chart...</p>}
-    <h4 className="title is-4 has-text-centered">
-        @coinId Holdings
-    </h4>
-    <AuthorizeView>
-        <Authorized Context="context">
-            <div class="box mt-4 mb-2 py-0 is-transparent has-text-centered">
-                <div class="button is-primary is-outlined" @onclick="UnwatchCoin">
-                    Unwatch Coin
-                </div>&emsp;
-                <a class="button is-primary is-outlined" href="/edit/@coinId">
-                    Edit Transactions
-                </a>
-            </div>
-        </Authorized>
-        <NotAuthorized Context="other">
-            <h6 class="title is-6">Please log in below or <NavLink href="register">register</NavLink> a new account.</h6>
-        </NotAuthorized>
-    </AuthorizeView>
+
+    <div class="box is-transparent has-text-centered">
+        <h5 class="title is-5 has-text-centered">
+            @coinId Holdings
+        </h5>
+        <AuthorizeView>
+            <Authorized Context="context">
+                @if (thisCoinStats == null)
+                {<div>This coin isn't in your portfolio yet..</div><div>Head over to the Add Coin page to add it!</div><br /> }
+                else if (thisCoinStats.coinId.Length == 0)
+                { <div>loading...</div>}
+                else
+                {
+                    <div class="columns is-mobile mb-5">
+                        <div class="column has-text-centered">
+                            Market Value:
+                            <div>$ @((thisCoinStats.current_price * thisCoinStats.totalHoldings).ToString("#,##0.##"))</div>
+                            <br /><br />
+                            <div>Profit/Loss:</div>
+                            <div>$ @thisCoinStats.PnL.ToString("#,##0.##")</div>
+                        </div>
+                        <div class="column has-text-centered">
+                            Holdings:
+                            <div>@thisCoinStats.totalHoldings.ToString("#,##0.##")</div>
+                            <br /><br />
+                            <div>% Change:</div>
+                            <div>@(thisCoinStats.percentChange >= 0 ? $"{thisCoinStats.percentChange.ToString("#,##0.##")} %" : $"- {thisCoinStats.percentChange.ToString("#,##0.##")} %")</div>
+                        </div>
+                    </div>
+                    <div class="columns is-mobile is-multiline is-centered">
+                        <div class="column has-text-centered is-narrow">
+                            <div class="button is-primary is-outlined" @onclick="UnwatchCoin">
+                                Unwatch Coin
+                            </div>
+                        </div>
+                        <div class="column has-text-centered is-narrow">
+                            <a class="button is-primary is-outlined" href="/edit/@coinId">
+                                Edit Transactions
+                            </a>
+                        </div>
+                    </div>
+                }
+            </Authorized>
+            <NotAuthorized Context="other">
+                <h6 class="title is-6">Please log in below or <NavLink href="register">register</NavLink> a new account.</h6>
+            </NotAuthorized>
+        </AuthorizeView>
+        <coinStack.Client.Shared.Footer />
+    </div>
 </div>
 
 @code {
@@ -41,11 +75,29 @@
     private static List<object> High = new List<object>();
     private static List<object> Low = new List<object>();
     private static List<object> Close = new List<object>();
+    private CoinStats thisCoinStats = new CoinStats("", 0);
 
     protected override async Task OnInitializedAsync()
     {
         await GetCandlestickData();
         ProcessData(deserialized);
+
+        PortfolioDataService.OnChange += StateHasChanged;
+
+        if (PortfolioDataService.finishedCalculations) { thisCoinStats = PortfolioDataService.PortfolioCoinStats.FirstOrDefault(c => c.coinId == coinId); return; }
+        var result = await CustomAuthStateProvider.GetAuthenticationStateAsync();
+        if (!result.User.Identity.IsAuthenticated) { return; }
+        if (PortfolioDataService.Coins.Count == 0)
+        {
+            await PortfolioDataService.LoadPortfolioCoins();
+            await PortfolioDataService.LoadCoins();
+        }
+        if (PortfolioDataService.Coins.Count == 0) { return; }
+        await PortfolioDataService.GetPortfolioMarketData();
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+        PortfolioDataService.CalculateAllCoinStats();
+        thisCoinStats = PortfolioDataService.PortfolioCoinStats.FirstOrDefault(c => c.coinId == coinId);
     }
 
     public async Task GetCandlestickData()
@@ -73,5 +125,21 @@
     public async Task UnwatchCoin()
     {
         await CoinService.RemovePortfolioCoin(coinId);
+        await PortfolioDataService.LoadPortfolioCoins();
+        await PortfolioDataService.LoadCoins();
+        await PortfolioDataService.GetPortfolioMarketData();
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+        PortfolioDataService.CalculateAllCoinStats();
+    }
+
+    public void Dispose()
+    {
+        Dates.Clear();
+        Open.Clear();
+        High.Clear();
+        Low.Clear();
+        Close.Clear();
+        PortfolioDataService.OnChange -= StateHasChanged;
     }
 }

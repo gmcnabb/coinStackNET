@@ -1,6 +1,8 @@
 ﻿@page "/edit/{coinId}"
-@using coinStack.Client.Services
-@inject ITransactionService TransactionService
+@inject AuthenticationStateProvider CustomAuthStateProvider
+@inject coinStack.Client.Services.ITransactionService TransactionService
+@inject coinStack.Client.Services.PortfolioDataService PortfolioDataService
+@implements IDisposable
 
 <div class="container is-max-desktop">
     <h4 class="title is-4 has-text-centered">
@@ -9,7 +11,7 @@
     <AuthorizeView>
         <Authorized Context="context">
             <div class="box has-text-centered" style="height: 250px; overflow-y: scroll">
-                <TransactionListDisplay coinId="@coinId" />
+                <TransactionListDisplay coinId="@coinId" reloader="@reload" />
             </div>
             <div class="box has-text-centered">
                 <strong>Create a new transaction:</strong><br /><br />
@@ -92,24 +94,47 @@
             <h6 class="title is-6">Please log in below or <NavLink href="register">register</NavLink> a new account.</h6>
         </NotAuthorized>
     </AuthorizeView>
+    <coinStack.Client.Shared.Footer />
 </div>
 
 @code {
     [Parameter]
     public string coinId { get; set; }
 
+    public string reload = "";
     private Transaction transaction = new Transaction() { Type = true, DateCreated = DateTime.Now };
     private bool collapseTypeDropdown = true;
     private string TransactionTypeActive => collapseTypeDropdown ? "is-shadowless" : "is-shadowless is-active";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         transaction.Coinid = coinId;
+
+        PortfolioDataService.OnChange += StateHasChanged;
+
+        if (PortfolioDataService.finishedCalculations) { return; }
+        var result = await CustomAuthStateProvider.GetAuthenticationStateAsync();
+        if (!result.User.Identity.IsAuthenticated) { return; }
+        if (PortfolioDataService.Coins.Count == 0)
+        {
+            await PortfolioDataService.LoadPortfolioCoins();
+            await PortfolioDataService.LoadCoins();
+        }
+        if (PortfolioDataService.Coins.Count == 0) { return; }
+        await PortfolioDataService.GetPortfolioMarketData();
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+        PortfolioDataService.CalculateAllCoinStats();
     }
 
     public async Task HandleSubmitTransaction()
     {
         await TransactionService.AddPortfolioTransaction(transaction);
+        await PortfolioDataService.GetPortfolioMarketData();
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+        PortfolioDataService.CalculateAllCoinStats();
+        if (reload.Length == 0) { reload = "a"; } else { reload = ""; }
     }
 
     private void TypeToggler()
@@ -120,5 +145,10 @@
     private void ChooseType(bool t)
     {
         transaction.Type = t;
+    }
+
+    public void Dispose()
+    {
+        PortfolioDataService.OnChange -= StateHasChanged;
     }
 }

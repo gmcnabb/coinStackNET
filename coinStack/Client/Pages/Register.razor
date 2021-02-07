@@ -1,6 +1,8 @@
 ﻿@page "/register"
 @inject NavigationManager NavigationManager
-@inject coinStack.Client.Services.IAuthService AuthService
+@inject coinStack.Client.Services.AuthService AuthService
+@inject IToastService ToastService
+
 
 <div class="container is-max-desktop">
     <h3>Register</h3>
@@ -29,6 +31,7 @@
         </div>
         <button type="submit" class="button is-primary is-outlined">Register</button>
     </EditForm>
+    <coinStack.Client.Shared.Footer />
 </div>
 
 @code {
@@ -39,7 +42,12 @@
         var result = await AuthService.Register(user);
         if (result.Success)
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/login");
+            ToastService.ShowSuccess("Registration successful. Please log in with your new account!");
+        }
+        else
+        {
+            ToastService.ShowError(result.Message);
         }
     }
 

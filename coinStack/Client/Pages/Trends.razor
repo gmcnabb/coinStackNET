@@ -30,7 +30,7 @@
     {
         @foreach (Coin c in @response.coins)
         {
-            <div class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;">
+            <a class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;" href="/coin/@c.item.id">
                 <div class="columns is-gapless is-mobile is-vcentered pr-4">
                     <div class="column has-text-left">
                         <img alt="@c.item.id logo" src="@c.item.large" style="height: 46px; width: 46px; vertical-align: middle" />
@@ -39,13 +39,14 @@
                     <div class="column has-text-centered">@c.item.symbol</div>
                     <div class="column has-text-right"># @(c.item.score + 1)</div>
                 </div>
-            </div>
+            </a>
         }
     }
     catch
     {
         <p>Loading...</p>
     }
+    <coinStack.Client.Shared.Footer />
 </div>
 
 @code {

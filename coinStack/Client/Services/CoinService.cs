@@ -11,7 +11,6 @@ namespace coinStack.Client.Services
 {
     public class CoinService : ICoinService
     {
-        public event Action OnChange;
         private readonly HttpClient _http;
         private readonly IToastService _toastService;
         public CoinService(HttpClient http, IToastService toastService)
@@ -22,7 +21,6 @@ namespace coinStack.Client.Services
 
         public IList<Coin> Coins { get; set; } = new List<Coin>();
         public IList<PortfolioCoin> PortfolioCoins { get; set; } = new List<PortfolioCoin>();
-        void CoinsChanged() => OnChange.Invoke();
 
         public async Task<bool> CheckForCoin(string coinId)
         {
@@ -38,26 +36,6 @@ namespace coinStack.Client.Services
                 return false;
             }
             return true;
-        }
-
-
-        public async Task LoadCoinsAsync()
-        {
-            if (PortfolioCoins.Count != Coins.Count)
-            {
-                Coins.Clear();
-                foreach (PortfolioCoin p in PortfolioCoins)
-                {
-                    var coin = await _http.GetFromJsonAsync<Coin>($"api/coin/{p.Coinid}");
-                    Coins.Add(coin);
-                }
-            }
-        }
-
-        public async Task LoadPortfolioCoinsAsync()
-        {
-            PortfolioCoins.Clear();
-            PortfolioCoins = await _http.GetFromJsonAsync<IList<PortfolioCoin>>("api/portfoliocoin");
         }
 
         public async Task AddPortfolioCoin(Coin c)

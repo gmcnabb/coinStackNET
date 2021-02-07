@@ -2,6 +2,8 @@
 @using Sve.Blazor.InfiniteScroll.Components
 @inject HttpClient Http
 @inject coinStack.Client.Services.ICoinService CoinService
+@inject coinStack.Client.Services.PortfolioDataService PortfolioDataService
+@implements IDisposable
 
 <AuthorizeView>
     <Authorized>
@@ -42,6 +44,11 @@
     private bool firstFetch = true;
     private int pagesFetched = 0;
 
+    protected override void OnInitialized()
+    {
+        PortfolioDataService.OnChange += StateHasChanged;
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         await FetchCoins();
@@ -76,5 +83,16 @@
         {
             await CoinService.AddPortfolioCoin(c);
         }
+        await PortfolioDataService.LoadPortfolioCoins();
+        await PortfolioDataService.LoadCoins();
+        await PortfolioDataService.GetPortfolioMarketData();
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+        PortfolioDataService.CalculateAllCoinStats();
+    }
+
+    public void Dispose()
+    {
+        PortfolioDataService.OnChange -= StateHasChanged;
     }
 }

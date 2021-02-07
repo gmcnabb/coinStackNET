@@ -2,7 +2,9 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
-@inject coinStack.Client.Services.IAuthService AuthService
+@inject coinStack.Client.Services.AuthService AuthService
+@inject coinStack.Client.Services.PortfolioDataService PortfolioDataService
+@inject IToastService ToastService
 
 <div class="container is-max-desktop">
     <AuthorizeView>
@@ -31,6 +33,7 @@
             </EditForm>
         </NotAuthorized>
     </AuthorizeView>
+    <coinStack.Client.Shared.Footer />
 </div>
 
 @code {
@@ -43,8 +46,12 @@
         {
             await LocalStorage.SetItemAsync<string>("authToken", result.Data);
             await AuthStateProvider.GetAuthenticationStateAsync();
+            ToastService.ShowSuccess("Login Successful!");
         }
-        else { Console.WriteLine(result.Message); }
+        else
+        {
+            ToastService.ShowError(result.Message);
+        }
     }
 
     private async void Logout()
@@ -52,5 +59,15 @@
         await LocalStorage.RemoveItemAsync("authToken");
         await AuthStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/");
+
+        PortfolioDataService.finishedCalculations = false;
+        PortfolioDataService.TotalValue = 0;
+        PortfolioDataService.TotalPnL = 0;
+        PortfolioDataService.PortfolioCoins.Clear();
+        PortfolioDataService.Coins.Clear();
+        PortfolioDataService.PortfolioTransactions.Clear();
+        PortfolioDataService.Transactions.Clear();
+        PortfolioDataService.MarketDataResponses.Clear();
+        PortfolioDataService.PortfolioCoinStats.Clear();
     }
 }

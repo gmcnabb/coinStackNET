@@ -16,7 +16,6 @@ namespace coinStack.Client
     {
         private readonly ILocalStorageService _localStorageService;
         private readonly HttpClient _http;
-        //private readonly IWatchlistService _watchlistService;
 
         public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient http)
         {

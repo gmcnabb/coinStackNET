@@ -1,53 +1,98 @@
 ﻿@page "/portfolio"
 @using System.Net.Http
 @inject HttpClient Http
-@inject coinStack.Client.Services.ICoinService CoinService
+@inject AuthenticationStateProvider CustomAuthStateProvider
+@inject coinStack.Client.Services.PortfolioDataService PortfolioDataService
+@implements IDisposable
 
 <div class="container is-max-desktop">
     <PortfolioTitle />
     <PortfolioSummary />
-    <div class="box mt-4 mb-2 py-0 is-transparent"
-         style="border-color: #4b4b4b; border-radius: 5px; border-style: solid; border-width: 1px;">
-        <div class="columns is-gapless is-mobile">
-            <div class="column">
-                <strong>Coin</strong>
-            </div>
-            <div class="column has-text-centered">
-                <strong>Price&emsp;</strong>
-            </div>
-            <div class="column has-text-right">
-                <strong>Holdings&nbsp;</strong>
-            </div>
-        </div>
-    </div>
-    <div style="height: 500px; overflow-y: auto">
-        @if (CoinService.Coins.Count == 0)
-        {
-            <div>loading...</div>
-        }
-        else
-        {
-            foreach (Coin c in CoinService.Coins)
+    <AuthorizeView>
+        <Authorized>
+            @if (PortfolioDataService.PortfolioCoins.Count == 0)
+            {<div>loading...</div><div>Visit the Add Coin page if you need to add some coins to your portfolio!</div>}
+            else if (PortfolioDataService.finishedCalculations)
             {
-                <a class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;" href="/coin/@c.id">
-                    <div class="columns is-gapless is-mobile is-vcentered pr-4">
+                <div class="box mt-4 mb-2 py-0 is-transparent"
+                     style="border-color: #4b4b4b; border-radius: 5px; border-style: solid; border-width: 1px;">
+                    <div class="columns is-gapless is-mobile">
                         <div class="column">
-                            <img alt="@c.id logo" src="@c.image" style="height: 46px; width: 46px; vertical-align: middle" />
-                            &emsp;@c.name
+                            <strong>Coin</strong>
                         </div>
-                        <div class="column has-text-centered">placeholder</div>
-                        <div class="column has-text-right">@c.symbol.ToUpper()</div>
+                        <div class="column has-text-centered">
+                            <strong>Price&emsp;</strong>
+                        </div>
+                        <div class="column has-text-right">
+                            <strong>Holdings&nbsp;</strong>
+                        </div>
                     </div>
-                </a>
+                </div>
+                <div style="height: 500px; overflow-y: auto">
+                    @foreach (Coin c in PortfolioDataService.Coins)
+                    {
+                        <a class="box mb-2" style="background: linear-gradient(to top right, #323232, #4b4b4b); padding: 5px;" href="/coin/@c.id">
+                            <div class="columns is-gapless is-mobile is-vcentered pr-4">
+                                <div class="column">
+                                    <img alt="@c.id logo" src="@c.image" style="height: 46px; width: 46px; vertical-align: middle" />
+                                    &emsp;@c.name
+                                </div>
+                                <div class="column has-text-centered">$ @formatLrgNum(PortfolioDataService.PortfolioCoinStats.First(s => s.coinId == c.id).current_price)</div>
+                                <div class="column has-text-right">
+                                    @if (PortfolioDataService.PortfolioCoinStats.First(s => s.coinId == c.id).totalHoldings == 0)
+                                    {<NavLink href="@($"edit/{c.id}")"><div class="button is-primary is-rounded is-small px-5" @onclick:stopPropagation="true">Add</div></NavLink>}
+                                    else
+                                    { <div>@($"$ {formatLrgNum(PortfolioDataService.PortfolioCoinStats.First(s => s.coinId == c.id).marketValueHoldings)}")</div>}
+                                </div>
+                            </div>
+                        </a>
+                    }
+
+                </div>
             }
-        }
-    </div>
+        </Authorized>
+        <NotAuthorized>
+            <div class="box has-text-centered">
+                <h6 class="title is-6">Please <NavLink href="login">Log in</NavLink> or <NavLink href="register">register</NavLink> a new account to add coins to your portfolio.</h6>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+    <coinStack.Client.Shared.Footer />
 </div>
 
 @code{
     protected override async Task OnInitializedAsync()
     {
-        await CoinService.LoadPortfolioCoinsAsync();
-        await CoinService.LoadCoinsAsync();
+        PortfolioDataService.OnChange += StateHasChanged;
+
+        if (PortfolioDataService.finishedCalculations) { return; }
+        var result = await CustomAuthStateProvider.GetAuthenticationStateAsync();
+        if (!result.User.Identity.IsAuthenticated) { return; }
+        if (PortfolioDataService.Coins.Count == 0)
+        {
+            await PortfolioDataService.LoadPortfolioCoins();
+            await PortfolioDataService.LoadCoins();
+        }
+        if (PortfolioDataService.Coins.Count == 0) { return; }
+        await PortfolioDataService.GetPortfolioMarketData();
+        await PortfolioDataService.LoadPortfolioTransactions();
+        await PortfolioDataService.LoadTransactions();
+        PortfolioDataService.CalculateAllCoinStats();
     }
+
+    public string formatLrgNum(double n)
+    {
+        if (n < 1e3) return n.ToString("#,##0.##");
+        if (n >= 1e3 && n < 1e6) return (n / 1e3).ToString("N2") + " K";
+        if (n >= 1e6 && n < 1e9) return (n / 1e6).ToString("N2") + " M";
+        if (n >= 1e9 && n < 1e12) return (n / 1e9).ToString("N2") + " B";
+        if (n >= 1e12 && n < 1e15) return (n / 1e12).ToString("N2") + " T";
+        else return "0";
+    }
+
+    public void Dispose()
+    {
+        PortfolioDataService.OnChange -= StateHasChanged;
+    }
+
 }
