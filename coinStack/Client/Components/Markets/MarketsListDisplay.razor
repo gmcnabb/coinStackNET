@@ -3,30 +3,37 @@
 @inject HttpClient Http
 
 <div style="height: 500px; overflow-y: auto">
-    <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReached="(e) => FetchCoins()">
-        <ul>
-            @foreach (MarketCoin c in coinList)
-            {
-                <li>
-                    <div class="columns is-gapless mb-0">
-                        <a class="button is-info is-outlined is-rounded is-fullwidth mb-0" href="coin/@c.id">
-                            <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
-                                <img alt="@c.id logo" src="@c.image" style="height: 36px; width: 36px; vertical-align: middle" />
-                                &nbsp;@c.name&ensp;@c.symbol.ToUpper()
-                            </div>
-                            <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
-                                $ @c.current_price
-                            </div>
-                            <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
-                                $ @formatLrgNum(c.market_cap)
-                            </div>
-                        </a>
-                    </div>
-                </li>
-            }
-        </ul>
-        <li id="observerTarget">Loading...</li>
-    </InfiniteScroll>
+    @if (coinList.Count > 0)
+    {
+        <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReached="(e) => FetchCoins()">
+            <ul>
+                @foreach (MarketCoin c in coinList)
+                {
+                    <li>
+                        <div class="columns is-gapless mb-0">
+                            <a class="button is-info is-outlined is-rounded is-fullwidth mb-0" href="coin/@c.id">
+                                <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
+                                    <img alt="@c.id logo" src="@c.image" style="height: 36px; width: 36px; vertical-align: middle" />
+                                    &nbsp;@c.name&ensp;@c.symbol.ToUpper()
+                                </div>
+                                <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
+                                    $ @c.current_price
+                                </div>
+                                <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
+                                    $ @formatLrgNum(c.market_cap)
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                }
+            </ul>
+            <li id="observerTarget">Loading...</li>
+        </InfiniteScroll>
+    }
+    else
+    {
+        <div>loading...</div>
+    }
 </div>
 
 @code {
@@ -34,10 +41,11 @@
     private List<MarketCoin> coinList = new List<MarketCoin>();
     private DateTime lastFetch = DateTime.Now;
     private bool firstFetch = true;
-    private int pagesFetched = 0;
+    private int pagesFetched = 1;
 
     protected override async Task OnParametersSetAsync()
     {
+        pagesFetched = 1;
         await FetchCoins();
     }
 

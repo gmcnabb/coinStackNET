@@ -8,26 +8,31 @@
 <AuthorizeView>
     <Authorized>
         <div style="height: 500px; overflow-y: auto">
-            <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReached="(e) => FetchCoins()">
-                <ul>
-                    @foreach (Coin c in coinList)
-                    {
-                        <li>
-                            <div class="columns is-gapless mb-0">
-                                <div class="button is-info is-outlined is-rounded is-fullwidth mb-0" @onclick="() => AddToPortfolio(c)">
-                                    <div class="column has-text-right is-5 is-5-mobile" style="text-overflow: ellipsis; overflow-x: hidden">
-                                        <img alt="@c.id logo" src="@c.image" style="height: 36px; width: 36px; vertical-align: middle" />
-                                    </div>
-                                    <div class="column has-text-left is-7 is-7-mobile" style="text-overflow: ellipsis; overflow-x: hidden">
-                                        @c.name&emsp;@c.symbol.ToUpper()
+            @if (coinList.Count > 0)
+            {
+                <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReached="(e) => FetchCoins()">
+                    <ul>
+                        @foreach (Coin c in coinList)
+                        {
+                            <li>
+                                <div class="columns is-gapless mb-0">
+                                    <div class="button is-info is-outlined is-rounded is-fullwidth mb-0" @onclick="() => AddToPortfolio(c)">
+                                        <div class="column has-text-right is-5 is-5-mobile" style="text-overflow: ellipsis; overflow-x: hidden">
+                                            <img alt="@c.id logo" src="@c.image" style="height: 36px; width: 36px; vertical-align: middle" />
+                                        </div>
+                                        <div class="column has-text-left is-7 is-7-mobile" style="text-overflow: ellipsis; overflow-x: hidden">
+                                            @c.name&emsp;@c.symbol.ToUpper()
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </li>
-                    }
-                </ul>
-                <li id="observerTarget">Loading...</li>
-            </InfiniteScroll>
+                            </li>
+                        }
+                    </ul>
+                    <li id="observerTarget">Loading...</li>
+                </InfiniteScroll>
+            }
+            else
+            { <div>loading...</div>}
         </div>
     </Authorized>
     <NotAuthorized>
@@ -42,7 +47,7 @@
     private List<Coin> coinList = new List<Coin>();
     private DateTime lastFetch = DateTime.Now;
     private bool firstFetch = true;
-    private int pagesFetched = 0;
+    private int pagesFetched = 1;
 
     protected override void OnInitialized()
     {
@@ -51,6 +56,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        pagesFetched = 1;
         await FetchCoins();
     }
 
