@@ -12,9 +12,11 @@
                     <li>
                         <div class="columns is-gapless mb-0">
                             <a class="button is-info is-outlined is-rounded is-fullwidth mb-0" href="coin/@c.id">
-                                <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
+                                <div class="column has-text-centered pl-0" style="text-overflow: clip; overflow-x: hidden">
                                     <img alt="@c.id logo" src="@c.image" style="height: 36px; width: 36px; vertical-align: middle" />
-                                    &nbsp;@c.name&ensp;@c.symbol.ToUpper()
+                                    <span class="is-hidden-mobile">
+                                        &nbsp;@c.name&ensp;
+                                    </span>@c.symbol.ToUpper()
                                 </div>
                                 <div class="column has-text-centered" style="text-overflow: ellipsis; overflow-x: hidden">
                                     $ @c.current_price

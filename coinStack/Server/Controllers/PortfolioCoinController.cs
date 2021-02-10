@@ -76,6 +76,15 @@ namespace coinStack.Server.Controllers
                 return BadRequest($"{coin.name} not found in user's currently selected portfolio.");
             }
 
+            var portfolioTransactions = await _context.PortfolioTransactions.Where(p => p.UserPortfolioId == portfolio.Id).ToListAsync();
+            var transactions = from p in portfolioTransactions
+                               join t in _context.Transactions on p.TransactionId equals t.Id
+                               select t;
+            if (transactions.Any(t => t.Coinid == coinId))
+            {
+                return BadRequest($"Please delete your {coin.name} transactions before removing it from your portfolio.");
+            }
+
             _context.PortfolioCoins.Remove(portfolioCoin);
             await _context.SaveChangesAsync();
             return Ok(portfolioCoin);

@@ -33,7 +33,6 @@ namespace coinStack.Client.Services
         {
             PortfolioCoins.Clear();
             PortfolioCoins = await _http.GetFromJsonAsync<IList<PortfolioCoin>>("api/portfoliocoin");
-            Console.WriteLine("load P coinsdone");
             CalcsChanged();
         }
         public async Task LoadCoins()
@@ -44,14 +43,12 @@ namespace coinStack.Client.Services
                 var coin = await _http.GetFromJsonAsync<Coin>($"api/coin/{p.Coinid}");
                 Coins.Add(coin);
             }
-            Console.WriteLine("load coinsdone");
             CalcsChanged();
         }
         public async Task LoadPortfolioTransactions()
         {
             PortfolioTransactions.Clear();
             PortfolioTransactions = await _http.GetFromJsonAsync<IList<PortfolioTransaction>>("api/portfoliotransaction");
-            Console.WriteLine("load P transactionsdone");
             CalcsChanged();
         }
         public async Task LoadTransactions()
@@ -62,7 +59,6 @@ namespace coinStack.Client.Services
                 var transaction = await _http.GetFromJsonAsync<Transaction>($"api/transaction/{p.Id}");
                 Transactions.Add(transaction);
             }
-            Console.WriteLine("load transactionsdone");
             CalcsChanged();
         }
         public async Task GetPortfolioMarketData()
@@ -73,7 +69,6 @@ namespace coinStack.Client.Services
                 coinIds += (c.id + "%2C%20");
             }
             MarketDataResponses = await _http.GetFromJsonAsync<List<MarketDataResponse>>($"https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids={coinIds}&order=market_cap_desc&per_page=250&page=1&sparkline=false");
-            Console.WriteLine("get market data done");
             CalcsChanged();
         }
         public void CalculateAllCoinStats()
@@ -82,12 +77,10 @@ namespace coinStack.Client.Services
             TotalValue = 0;
             TotalPnL = 0;
             PortfolioCoinStats.Clear();
-            Console.WriteLine("cleared coinstats");
             foreach (MarketDataResponse m in MarketDataResponses)
             {
                 PortfolioCoinStats.Add(new CoinStats(m.id, m.current_price));
             }
-            Console.WriteLine("created all coinstats");
             foreach (Transaction t in Transactions)
             {
                 var coinStats = PortfolioCoinStats.First(c => c.coinId == t.Coinid);
@@ -102,7 +95,6 @@ namespace coinStack.Client.Services
                     coinStats.sumOfProceeds += (t.Quantity * t.USDValue);
                 }
             }
-            Console.WriteLine("first pass calcs done");
             foreach (CoinStats c in PortfolioCoinStats)
             {
                 c.totalHoldings = c.quantityBought - c.quantitySold;
@@ -114,7 +106,6 @@ namespace coinStack.Client.Services
                 TotalValue += c.marketValueHoldings;
                 TotalPnL += c.PnL;
             }
-            Console.WriteLine("second pass calcs done");
             if (!initialized) { initialized = true; }
             calculating = false;
             CalcsChanged();

@@ -39,7 +39,7 @@
                             <div>@thisCoinStats.totalHoldings.ToString("#,##0.##")</div>
                             <br /><br />
                             <div>% Change:</div>
-                            <div>@(thisCoinStats.percentChange >= 0 ? $"{thisCoinStats.percentChange.ToString("#,##0.##")} %" : $"- {thisCoinStats.percentChange.ToString("#,##0.##")} %")</div>
+                            <div>@($" {thisCoinStats.percentChange.ToString("#,##0.##")} %")</div>
                         </div>
                     </div>
                     <div class="columns is-mobile is-multiline is-centered">
