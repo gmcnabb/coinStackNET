@@ -76,6 +76,7 @@
 
     public async Task AddToPortfolio(Coin c)
     {
+        PortfolioDataService.calculating = true;
         var exists = await CoinService.CheckForCoin(c.id);
         if (!exists)
         {

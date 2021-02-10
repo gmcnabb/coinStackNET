@@ -24,7 +24,7 @@
                 {<div>This coin isn't in your portfolio yet..</div><div>Head over to the Add Coin page to add it!</div><br /> }
                 else if (thisCoinStats.coinId.Length == 0)
                 { <div>loading...</div>}
-                else
+                else if (PortfolioDataService.initialized && !PortfolioDataService.calculating)
                 {
                     <div class="columns is-mobile mb-5">
                         <div class="column has-text-centered">
@@ -84,7 +84,10 @@
 
         PortfolioDataService.OnChange += StateHasChanged;
 
-        if (PortfolioDataService.finishedCalculations) { thisCoinStats = PortfolioDataService.PortfolioCoinStats.FirstOrDefault(c => c.coinId == coinId); return; }
+        if (PortfolioDataService.initialized || PortfolioDataService.calculating)
+        {
+            thisCoinStats = PortfolioDataService.PortfolioCoinStats.FirstOrDefault(c => c.coinId == coinId); return;
+        }
         var result = await CustomAuthStateProvider.GetAuthenticationStateAsync();
         if (!result.User.Identity.IsAuthenticated) { return; }
         if (PortfolioDataService.Coins.Count == 0)
@@ -92,7 +95,8 @@
             await PortfolioDataService.LoadPortfolioCoins();
             await PortfolioDataService.LoadCoins();
         }
-        if (PortfolioDataService.Coins.Count == 0) { return; }
+        if (PortfolioDataService.Coins.Count == 0) { PortfolioDataService.initialized = true; return; }
+        PortfolioDataService.calculating = true;
         await PortfolioDataService.GetPortfolioMarketData();
         await PortfolioDataService.LoadPortfolioTransactions();
         await PortfolioDataService.LoadTransactions();
@@ -124,6 +128,7 @@
 
     public async Task UnwatchCoin()
     {
+        PortfolioDataService.calculating = true;
         await CoinService.RemovePortfolioCoin(coinId);
         await PortfolioDataService.LoadPortfolioCoins();
         await PortfolioDataService.LoadCoins();

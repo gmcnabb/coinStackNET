@@ -11,7 +11,12 @@
     <AuthorizeView>
         <Authorized Context="context">
             <div class="box has-text-centered" style="height: 250px; overflow-y: scroll">
-                <TransactionListDisplay coinId="@coinId" reloader="@reload" />
+                @if (!PortfolioDataService.initialized || PortfolioDataService.calculating)
+                {
+                    <div>loading...</div>
+                }
+                else
+                { <TransactionListDisplay coinId="@coinId" reloader="@reload" />}
             </div>
             <div class="box has-text-centered">
                 <strong>Create a new transaction:</strong><br /><br />
@@ -112,7 +117,7 @@
 
         PortfolioDataService.OnChange += StateHasChanged;
 
-        if (PortfolioDataService.finishedCalculations) { return; }
+        if (PortfolioDataService.initialized || PortfolioDataService.calculating) { return; }
         var result = await CustomAuthStateProvider.GetAuthenticationStateAsync();
         if (!result.User.Identity.IsAuthenticated) { return; }
         if (PortfolioDataService.Coins.Count == 0)
@@ -120,7 +125,8 @@
             await PortfolioDataService.LoadPortfolioCoins();
             await PortfolioDataService.LoadCoins();
         }
-        if (PortfolioDataService.Coins.Count == 0) { return; }
+        if (PortfolioDataService.Coins.Count == 0) { PortfolioDataService.initialized = true; return; }
+        PortfolioDataService.calculating = true;
         await PortfolioDataService.GetPortfolioMarketData();
         await PortfolioDataService.LoadPortfolioTransactions();
         await PortfolioDataService.LoadTransactions();
@@ -129,6 +135,7 @@
 
     public async Task HandleSubmitTransaction()
     {
+        PortfolioDataService.calculating = true;
         await TransactionService.AddPortfolioTransaction(transaction);
         await PortfolioDataService.GetPortfolioMarketData();
         await PortfolioDataService.LoadPortfolioTransactions();

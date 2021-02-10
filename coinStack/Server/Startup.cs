@@ -29,7 +29,15 @@ namespace coinStack.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            if (System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                services.AddDbContext<DataContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("coinStackProd")));
+            else
+                services.AddDbContext<DataContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddScoped<IAuthRepository, AuthRepository>();

@@ -60,7 +60,7 @@
         await AuthStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/");
 
-        PortfolioDataService.finishedCalculations = false;
+        PortfolioDataService.initialized = false;
         PortfolioDataService.TotalValue = 0;
         PortfolioDataService.TotalPnL = 0;
         PortfolioDataService.PortfolioCoins.Clear();

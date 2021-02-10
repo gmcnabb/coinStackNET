@@ -67,6 +67,7 @@ else
 
     public async Task DeleteTransaction(Transaction transaction)
     {
+        PortfolioDataService.calculating = true;
         await TransactionService.DeleteTransaction(transaction);
         CoinBuys.Remove(transaction);
         CoinSells.Remove(transaction);

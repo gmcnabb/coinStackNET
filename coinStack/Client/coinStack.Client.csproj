@@ -29,4 +29,8 @@
     <ProjectReference Include="..\Shared\coinStack.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
 </Project>
